@@ -45,6 +45,12 @@ namespace App.Identity
                 .AddInMemoryClients(Config.Clients);
 
             builder.AddDeveloperSigningCredential();
+
+            services
+                .AddEventStore(Configuration["EventStore"])
+                .AddMongoStore(Configuration["MongoDB"])
+                .AddServices()
+                .AddProjections();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,24 +112,21 @@ namespace App.Identity
         }
 
         public static IServiceCollection AddProjections(
-            this IServiceCollection services,
-            EventStoreClient eventStoreClient,
-            IMongoDatabase database)
+            this IServiceCollection services)
         {
-
             services
                 .AddHostedService<AllStreamSubscription>( provider => {
                     var subscriptionId = "users.projections";
                     var loggerFactory = provider.GetLoggerFactory();
 
                     return new AllStreamSubscription(
-                        eventStoreClient,
+                        provider.GetEventStoreClient(),
                         subscriptionId,
                         new MongoCheckpointStore(
-                            database,
+                            provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new UserDetailsProjection(database, subscriptionId, loggerFactory)},
+                        new[] { new UserDetailsProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
@@ -138,9 +141,12 @@ namespace App.Identity
             string eventStoreConnectionString
         )
         {
+            EventMapping.MapEventTypes();
+            
             var settings = EventStoreClientSettings.Create(eventStoreConnectionString);
             var eventStoreClient = new EventStoreClient(settings);
             var eventStore = new EsdbEventStore(eventStoreClient);
+            services.AddSingleton(eventStoreClient);
             var aggregateStore = new AggregateStore(eventStore, DefaultEventSerializer.Instance);
             services.AddSingleton<IAggregateStore>(aggregateStore);
             return services;
@@ -163,6 +169,8 @@ namespace App.Identity
             => provider.GetRequiredService<IAggregateStore>();
         public static IMongoDatabase GetMongoDatabase(this IServiceProvider provider)
             => provider.GetRequiredService<IMongoDatabase>();
+        public static EventStoreClient GetEventStoreClient(this IServiceProvider provider)
+            => provider.GetRequiredService<EventStoreClient>();
 
     }
 }

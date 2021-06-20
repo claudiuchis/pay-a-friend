@@ -20,6 +20,7 @@ namespace App.Identity.Registration
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterInputModel model)
         {
             if (ModelState.IsValid)
