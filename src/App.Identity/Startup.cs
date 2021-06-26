@@ -83,7 +83,7 @@ namespace App.Identity
         }
     }
 
-    public static class Extensions
+    public static class StartupExtensions
     {
         public static IServiceCollection AddServices(
             this IServiceCollection services

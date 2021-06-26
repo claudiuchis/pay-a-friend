@@ -44,7 +44,7 @@ namespace App.Identity.Authentication
                         }
                     };
                     await HttpContext.SignInAsync(isuser, null);
-                    return Ok();
+                    return Redirect(model.ReturnUrl);
                 }
                 else
                 {

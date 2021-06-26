@@ -34,7 +34,7 @@ namespace App.Identity.Registration
                 };
 
                 await _service.Handle(command, default);
-                return Ok();
+                return Redirect(model.ReturnUrl);
             }
             return View(model);
         }
