@@ -9,21 +9,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using IdentityServer4;
+using Microsoft.IdentityModel.Tokens;
 
 using Eventuous;
 using MongoDB.Driver;
 using EventStore.Client;
-using static BCrypt.Net.BCrypt;
 using Eventuous.Subscriptions.EventStoreDB;
 using Eventuous.Projections.MongoDB;
 using Eventuous.EventStoreDB;
 
-using Pay.Identity.Registration;
-using Pay.Identity.Authentication;
-using Pay.Identity.Projections;
+using Pay.Verification.Projections;
 
-namespace Pay.Identity
+namespace Pay.Verification
 {
     public class Startup
     {
@@ -37,10 +34,11 @@ namespace Pay.Identity
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services
+                .AddControllers();
 
             services
-                .AddCustomIdentityServer()
+                .AddCustomAuthorization()
                 .AddEventStore(Configuration["EventStore"])
                 .AddMongoStore(Configuration["MongoDB"])
                 .AddServices()
@@ -50,57 +48,52 @@ namespace Pay.Identity
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseIdentityServer();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers()
+                    .RequireAuthorization("ApiScope");
             });
         }
     }
 
     public static class StartupExtensions
     {
-        /*
-        For local development/testing, to get the browser to recognize the self-signed certificate, 
-        and thus to be able to login using the Pay.Identity service), run this command: 
-            dotnet dev-certs https --trust
-        
-        More here:
-        https://www.thesslstore.com/blog/how-to-make-ssl-certificates-play-nice-with-asp-net-core/
-        */
-        public static IServiceCollection AddCustomIdentityServer(
+
+        public static IServiceCollection AddCustomAuthorization(
             this IServiceCollection services
         )
         {
-            var builder = services.AddIdentityServer(options => 
-                options.UserInteraction.LoginUrl = "/Authentication/Login"
-                )
-                .AddInMemoryIdentityResources(Config.IdentityResources)
-                .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryClients(Config.Clients);
+            // accepts any access token issued by identity server
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "https://localhost:5001";
+                    
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
 
-            builder.AddDeveloperSigningCredential();
+            // adds an authorization policy to make sure the token is for scope 'api1'
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiScope", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "pay.verification");
+                });
+            });
+            
             return services;
         }
+
         public static IServiceCollection AddServices(
             this IServiceCollection services
         )
@@ -109,21 +102,12 @@ namespace Pay.Identity
                 .AddSingleton(
                     c => 
                     {
-                        return new RegistrationService(
-                            c.GetAggregateStore(),
-                            (plain) => HashPassword(plain)
-                        );
-                    }
-                )
-                .AddSingleton(
-                    c => 
-                    {
-                        return new AuthenticationService(
-                            c.GetMongoDatabase(),
-                            (plainPassword, hashedPassword) => Verify(plainPassword, hashedPassword)
+                        return new VerificationService(
+                            c.GetAggregateStore()
                         );
                     }
                 );
+
             return services;
         }
 
@@ -142,7 +126,7 @@ namespace Pay.Identity
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new UserDetailsProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
+                        new[] { new VerificationDetailsProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );

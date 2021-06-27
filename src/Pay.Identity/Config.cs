@@ -17,7 +17,7 @@ namespace Pay.Identity
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             {
-                new ApiScope("app.webapi", "App.WebApi")
+                new ApiScope("pay.verification", "Pay.Verification")
             };
 
         public static IEnumerable<Client> Clients =>
@@ -26,22 +26,22 @@ namespace Pay.Identity
                 // interactive ASP.NET Core MVC client
                 new Client
                 {
-                    ClientId = "app.client",
+                    ClientId = "pay.webapp",
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.Code,
                     
                     // where to redirect to after login
-                    RedirectUris = { "https://localhost:5001/signin-oidc" },
+                    RedirectUris = { "https://localhost:6001/signin-oidc" },
 
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:6001/signout-callback-oidc" },
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "app.webapi"
+                        "pay.verification"
                     }
                 }
             };

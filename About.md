@@ -34,7 +34,9 @@ This allows for an audit trail to be created for all changes in the system, and 
 - Eventuous (https://github.com/Eventuous/eventuous) which provides the Domain Driven Design capabilities with a very small footprint.
 - IdentityServer4 for creating my own authentication and authorization UI/API (OpenID Connect and oAuth2 capabilities)
 
-
+Note:
+- to get the browser to recognize the self-signed certificate (and thus to be able to login using the Pay.Identity service), run this command: dotnet dev-certs https --trust
+(https://www.thesslstore.com/blog/how-to-make-ssl-certificates-play-nice-with-asp-net-core/)
 
 
 
