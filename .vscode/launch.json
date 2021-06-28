@@ -1,0 +1,83 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Pay.Identity",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-identity",
+            "program": "${workspaceFolder}/src/Pay.Identity/bin/Debug/net5.0/Pay.Identity.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Pay.Identity",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/Pay.Identity/Views"
+            }
+        },
+        {
+            "name": "Pay.WebApp",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-webapp",
+            "program": "${workspaceFolder}/src/Pay.WebApp/bin/Debug/net5.0/Pay.WebApp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Pay.WebApp",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/Pay.WebApp/Views"
+            }
+        },
+        {
+            "name": "Pay.Verification",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-verification",
+            "program": "${workspaceFolder}/src/Pay.Verification/bin/Debug/net5.0/Pay.Verification.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Pay.Verification",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/Pay.Verification/Views"
+            }
+        },
+
+    ],
+    "compounds": [
+        {
+            "name": "Pay.Identity, Pay.WebApp and Pay.Verification",
+            "configurations": [
+                "Pay.Identity",
+                "Pay.WebApp",
+                "Pay.Verification"
+            ]
+        },
+        {
+            "name": "Pay.Identity, Pay.Verification",
+            "configurations": [
+                "Pay.Identity",
+                "Pay.Verification"
+            ]
+        }
+    ]
+}

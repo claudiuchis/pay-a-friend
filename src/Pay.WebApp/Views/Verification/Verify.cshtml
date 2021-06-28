@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Verification Page";
+}
+
+<div class="login-page">
+    <div class="lead">
+        <h1>Details Verification</h1>
+    </div>
+</div>
+
+<partial name="_ValidationSummary" />
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Personal Details</h2>
+            </div>
+
+            <div class="card-body">
+                <form asp-route="Post">
+                    <button class="btn btn-primary" name="button" value="submit">Submit</button>
+                    <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>

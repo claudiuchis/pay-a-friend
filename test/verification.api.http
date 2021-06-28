@@ -1,0 +1,52 @@
+@host = https://localhost:5003
+
+###
+post {{host}}/api/verify/draft
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkQ4OURCMzFERENFODI2NkY0RjM2Nzc0OEQxQTIyRjJFIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE2MjQ4NzQyODMsImV4cCI6MTYyNDg3Nzg4MywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSIsImNsaWVudF9pZCI6InBheS53ZWJhcHAiLCJzdWIiOiI1YTVjNTM4Ny04ZTYwLTQzODctODk0OS04ZmYzNTlkZjRhZWQiLCJhdXRoX3RpbWUiOjE2MjQ4NzQyODMsImlkcCI6ImxvY2FsIiwianRpIjoiQjA2Q0E4RTYzOUNBRDFGRjRENDRDQ0Q0NUQwNTcxMzMiLCJzaWQiOiI2MUU3MjcwMkY5RkM1NkFDODYyRjMyNDQ1MENGQjU4MyIsImlhdCI6MTYyNDg3NDI4Mywic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSJdLCJhbXIiOlsicHdkIl19.t-0gLzBE8r4VkFdCK81aLr420rDTRecoqSVdPeOyb7eXWiyo1xnJ7qgrYLs9qemOIK9eaY0O7iuQ9fp9yrCyTkaNTf0csaoL5Jcp39tkjx-LcVuxaLuOGe2AWF-8GZiJQMnKQsmnUksr7djuKMOS0bn5ToaP9tenlq0760XZ8YZ4Q4EeDaoqRwzaHxKPMuw3Iem-Cylevu4dDUjmS3gIEJ5T3gMoIIZmQ_r95uZ877zvtF2aihdM4MmYY85oi9x0iG6GqXB8SHQzohOXRZkTBbtnAMxDYVbnzO4lB0886x7dKQxy0PLmqdfZMGd40r16Vb2M2uvOV4_RpldAyj-igw
+
+{
+    "VerificationDetailsId": "5a5c5387-8e60-4387-8949-8ff359df4aab",
+    "CustomerId": "5a5c5387-8e60-4387-8949-8ff359df4aed"
+}
+
+###
+
+post {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "Email": "claudiu6@domain.com",
+    "Password": "123"
+}
+
+###
+
+put {{host}}/basket/items
+Content-Type: application/json
+
+{
+    "BasketId": "860691c3-54de-479b-9a7c-e3e5cc474122",
+    "ProductId": "860691c3-54de-479b-9a7c-e3e5cc47413f",
+    "Quantity": 2
+}
+
+###
+
+delete {{host}}/basket/items
+Content-Type: application/json
+
+{
+    "BasketId": "860691c3-54de-479b-9a7c-e3e5cc474122",
+    "ProductId": "860691c3-54de-479b-9a7c-e3e5cc47413f"
+}
+
+###
+
+get {{host}}/basket/basketid?basketid=860691c3-54de-479b-9a7c-e3e5cc474122
+
+###
+
+get {{host}}/basket/customerid?customerid=860691c3-54de-479b-9a7c-e3e5cc474111
+
+###

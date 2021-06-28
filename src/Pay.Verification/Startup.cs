@@ -81,7 +81,7 @@ namespace Pay.Verification
                     };
                 });
 
-            // adds an authorization policy to make sure the token is for scope 'api1'
+            // adds an authorization policy to make sure the token is for the correct scope
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ApiScope", policy =>
