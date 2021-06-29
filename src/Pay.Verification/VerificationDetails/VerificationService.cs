@@ -19,6 +19,22 @@ namespace Pay.Verification
                         new CustomerId(cmd.CustomerId)
                     )
             );
+
+            OnExisting<V1.AddDateOfBirth>(
+                cmd => new VerificationDetailsId(cmd.VerificationDetailsId),
+                (details, cmd) => details.AddDateOfBirth(DateOfBirth.FromString(cmd.DateOfBirth))
+            );
+
+            OnExisting<V1.AddAddress>(
+                cmd => new VerificationDetailsId(cmd.VerificationDetailsId),
+                (details, cmd) => details.AddAddress(new Address(cmd.Address1, cmd.Address2, cmd.CityTown, cmd.CountyState, cmd.Code, cmd.Country))
+            );
+
+            OnExisting<V1.SubmitDetails>(
+                cmd => new VerificationDetailsId(cmd.VerificationDetailsId),
+                (details, cmd) => details.SubmitDetails()
+            );
+
         }
     }
 }

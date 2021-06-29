@@ -93,7 +93,9 @@ namespace Pay.WebApp
                 options.DefaultScheme = "Cookies";
                 options.DefaultChallengeScheme = "oidc";
             })
-            .AddCookie("Cookies")
+            .AddCookie("Cookies", options => {
+                options.ExpireTimeSpan = new TimeSpan(0, 30, 0); // cookie to expire after 30 minutes
+            })
             .AddOpenIdConnect("oidc", options =>
             {
                 options.Authority = config.Authority;

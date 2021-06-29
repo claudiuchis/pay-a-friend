@@ -1,4 +1,6 @@
-﻿@{
+﻿@model VerificationModel
+
+@{
     ViewData["Title"] = "Verification Page";
 }
 
@@ -18,7 +20,38 @@
             </div>
 
             <div class="card-body">
-                <form asp-route="Post">
+                <form asp-route="Verify">
+
+                    <div class="form-group">
+                        <label asp-for="DateOfBirth">Date of Birth (required)</label>
+                        <input class="form-control" placeholder="day/month/year, e.g. 1/1/1976" asp-for="DateOfBirth">
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Address1">Address 1 (required)</label>
+                        <input class="form-control" placeholder="e.g. 78 Royston" asp-for="Address1">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Address2">Address 2</label>
+                        <input class="form-control" placeholder="Kimmage Road West" asp-for="Address2">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CityTown">City or Town (required)</label>
+                        <input class="form-control" placeholder="e.g. Buncrana" asp-for="CityTown">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CountyState">County or State (required)</label>
+                        <input class="form-control" placeholder="e.g. Donegal" asp-for="CountyState">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Code">Code</label>
+                        <input class="form-control" placeholder="e.g. D15DFR9" asp-for="Code">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Country">Country (required)</label>
+                        <input class="form-control" placeholder="Country" asp-for="Country">
+                    </div>
+
                     <button class="btn btn-primary" name="button" value="submit">Submit</button>
                     <button class="btn btn-secondary" name="button" value="cancel">Cancel</button>
                 </form>

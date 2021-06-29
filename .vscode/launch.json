@@ -73,10 +73,10 @@
             ]
         },
         {
-            "name": "Pay.Identity, Pay.Verification",
+            "name": "Pay.Identity, Pay.WebApp",
             "configurations": [
                 "Pay.Identity",
-                "Pay.Verification"
+                "Pay.WebApp"
             ]
         }
     ]

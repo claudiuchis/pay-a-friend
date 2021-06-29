@@ -17,5 +17,21 @@ namespace Pay.Verification
         [Route("draft")]
         public Task CreateDraft([FromBody] CreateVerificationDetailsDraft command)
             => _service.Handle(command, default);    
+
+        [HttpPost]
+        [Route("dob")]
+        public Task AddDateOfBirth([FromBody] AddDateOfBirth command)
+            => _service.Handle(command, default);    
+
+        [HttpPost]
+        [Route("address")]
+        public Task AddAddress([FromBody] AddAddress command)
+            => _service.Handle(command, default);    
+
+        [HttpPost]
+        [Route("submit")]
+        public Task Submit([FromBody] SubmitDetails command)
+            => _service.Handle(command, default);    
+
     }
 }

@@ -16,9 +16,18 @@ namespace Pay.Verification.Projections
         protected override ValueTask<Operation<VerificationDetails>> GetUpdate(object @event, long? position)
         {
             return @event switch{
-                V1.CustomerStartedVerification e => new (new CollectionOperation<VerificationDetails>( (collection, cancellationToken) 
-                    => collection.InsertOneAsync(new VerificationDetails(
-                        e.VerificationDetailsId, e.CustomerId)))),
+                V1.CustomerStartedVerification e 
+                    => new(new CollectionOperation<VerificationDetails>( (collection, cancellationToken) 
+                        => collection.InsertOneAsync(new VerificationDetails(e.VerificationDetailsId, e.CustomerId, VerificationStatus.Pending.Value), null, cancellationToken))),
+                V1.AddressAdded e 
+                    => UpdateOperationTask(e.VerificationDetailsId, update 
+                        => update.Set(p => p.Address, $"{e.Address1} {e.Address2}, {e.CityTown}, {e.CountyState}, {e.Code}, {e.Country}")),
+                V1.DateOfBirthAdded e
+                    => UpdateOperationTask(e.VerificationDetailsId, update
+                        => update.Set(p => p.DateOfBirth, e.DateOfBirth)),
+                V1.DetailsSubmitted e
+                    => UpdateOperationTask(e.VerificationDetailsId, update
+                        => update.Set(p => p.Status, VerificationStatus.Pending.Value)),
                 _ => NoOp
             };
         }

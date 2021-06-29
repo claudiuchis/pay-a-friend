@@ -21,13 +21,14 @@ namespace Pay.WebApp
         }   
 
         [HttpPost]
-        public async Task Verify(VerificationInputModel model)
+        public async Task<IActionResult> Verify(VerificationModel model)
         {
-            var customerId = User.Claims.Where( claim => claim.Type == "sub").FirstOrDefault().Value;
-            await _service.CreateDraftVerificationDetails(new CreateDraftVerificationDetails {
-                VerificationDetailsId = Guid.NewGuid().ToString(),
-                CustomerId = customerId
-            });
+            if (ModelState.IsValid)   
+            {
+                await _service.SendVerificationDetails(model);
+                return Redirect("/Home");
+            }
+            return View(model);
         }
     }
 }

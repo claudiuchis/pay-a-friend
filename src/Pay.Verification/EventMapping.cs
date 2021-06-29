@@ -9,6 +9,8 @@ namespace Pay.Verification
         public static void MapEventTypes()
         {
             TypeMap.AddType<V1.CustomerStartedVerification>("CustomerStartedVerification");
+            TypeMap.AddType<V1.AddressAdded>("AddressAdded");
+            TypeMap.AddType<V1.DateOfBirthAdded>("DateOfBirthAdded");
         }
     }
 }
