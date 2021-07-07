@@ -31,7 +31,7 @@ namespace Pay.Verification
         [HttpPost]
         [Route("submit")]
         public Task Submit([FromBody] SubmitDetails command)
-            => _service.Handle(command, default);    
+            => _service.Handle(command, default);  
 
     }
 }
