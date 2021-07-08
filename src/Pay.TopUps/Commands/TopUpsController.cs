@@ -9,7 +9,7 @@ using static Pay.TopUps.Commands.Commands;
 namespace Pay.TopUps.Commands
 {
     [ApiController]
-    [Route("[api/topup]")]
+    [Route("api/topup")]
     public class TopUpsController : ControllerBase
     {
         private readonly ILogger<TopUpsController> _logger;

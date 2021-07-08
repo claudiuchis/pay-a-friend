@@ -23,6 +23,7 @@ using Eventuous.EventStoreDB;
 using Pay.TopUps.Domain;
 using Pay.TopUps.Infrastructure;
 using Pay.TopUps.Projections;
+using Pay.TopUps.Commands;
 
 namespace Pay.TopUps
 {
@@ -84,7 +85,8 @@ namespace Pay.TopUps
         {
             services
                 .AddSingleton<ICurrencyLookup, FixedCurrencyLookup>()
-                .AddSingleton<IPaymentService, StripePaymentsService>();
+                .AddSingleton<IPaymentService, StripePaymentsService>()
+                .AddSingleton<TopUpsService>();
 
             return services;
         }

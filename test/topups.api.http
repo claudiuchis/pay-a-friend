@@ -1,0 +1,23 @@
+@host = https://localhost:5005
+
+###
+post {{host}}/api/topup
+Content-Type: application/json
+
+{
+    "TopUpId": "5a5c5387-8e60-4387-8949-8ff359df4aab",
+    "Amount": 20,
+    "CurrencyCode": "EUR",
+    "Name": "John Smith",
+    "Number": "4242424242424242",
+    "ExpMonth": "01",
+    "ExpYear": "22",
+    "Cvc": "123",
+    "AddressCity": "",
+    "AddressCountry": "",
+    "AddressLine1": "",
+    "AddressLine2": "",
+    "AddressState": "",
+    "AddressZip": ""
+}
+
