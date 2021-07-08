@@ -16,6 +16,16 @@ I'm using this as a playground to learn about:
 - The customer can top-up their prepaid account using a debit/credit card.
 - The customer can pay other customers who are using this service, up to the total amount in their prepaid account.
 
+# Business process
+Event Storming is being used to define the domain model for online payments using a prepaid account. 
+The output has been captured in the [Business Process Modeling with Event Storming](BusinessProcessModellingUsingEventStorming.pdf) document.
+
+This model captures:
+- the ubiquitous language for this domain model (in the form of events)
+- the personas
+- the user flows
+- aggregates (derived from events and used for technical implementation)
+
 # High level architecture
 In the first version, customers use a web-based (MVC) application. In a future version, a mobile app (e.g. Android) will provide the same functionality.
 Internal users will use a similar web-based (MVC) application to validate customers.
