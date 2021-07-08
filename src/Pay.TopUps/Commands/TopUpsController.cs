@@ -13,23 +13,19 @@ namespace App.TopUps.Commands
     public class TopUpsController : ControllerBase
     {
         private readonly ILogger<TopUpsController> _logger;
+        private readonly TopUpsService _service;
 
-        public TopUpsController(ILogger<TopUpsController> logger)
+        public TopUpsController(
+            ILogger<TopUpsController> logger,
+            TopUpsService service
+            )
         {
             _logger = logger;
+            _service = service;
         }
 
         [HttpPost]
-        public Task SubmitTopUp([FromBody] SubmitTopUp)
-        {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
+        public Task SubmitTopUp([FromBody] SubmitTopUp command)
+            => _service.Handle(command, default);
     }
 }
