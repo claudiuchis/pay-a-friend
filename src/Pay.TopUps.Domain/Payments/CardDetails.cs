@@ -1,7 +1,8 @@
+using System;
 
 namespace Pay.TopUps.Domain
 {
-    public record CardDetails()
+    public record CardDetails
     {
         public string Name { get; init; }
         public string Number { get; init; }

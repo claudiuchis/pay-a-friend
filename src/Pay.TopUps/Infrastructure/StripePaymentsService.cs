@@ -1,22 +1,22 @@
-using System.Threading;
+using System.Threading.Tasks;
 using Pay.TopUps.Domain;
 using Stripe;
-using Automapper;
+using AutoMapper;
 
 namespace Pay.TopUps.Infrastructure
 {
     public class StripePaymentsService : IPaymentService
     {
-        async Task<PaymentResult> ChargeCard(CardDetails card, BillingDetails billing, Money amount)
+        IMapper _mapper; 
+        public StripePaymentsService(IMapper mapper) => _mapper = mapper;
+        public async Task<PaymentResult> ChargeCard(CardDetails card, BillingDetails billing, Money amount)
         {
-            var source = Mapper.Map<CardCreateNestedOptions>(card)
-                .Map(billing);
-            source.Amount = amount.Amount;
-            source.Currency = amount.Currency.CurrencyCode;
+            var source = _mapper.Map<CardCreateNestedOptions>(card)
+                .Map(billing, _mapper);
 
             var options = new ChargeCreateOptions
             {
-                Amount = amount.Amount,
+                Amount = (long)amount.Amount,
                 Currency = amount.Currency.CurrencyCode,
                 Source = source
             };
@@ -25,18 +25,14 @@ namespace Pay.TopUps.Infrastructure
             var charge = await service.CreateAsync(options);
             if (charge.Paid)
             {
-                return new PaymentResult {
-                    Provider = PaymentResult.PaymentProviders.Stripe,
-                    PaymentId = charge.Id,
-                    CardLast4Digits = charge.PaymentMethodDetails.Card.Last4
+                return new PaymentResult(PaymentProvider.Stripe, charge.PaymentMethodDetails.Card.Last4) {
+                    PaymentId = charge.Id
                 };
             }
             else 
             {
-                return new PaymentResult {
-                    Provider = PaymentResult.PaymentProviders.Stripe,
-                    Reason = charge.Outcome.Reason,
-                    CardLast4Digits = charge.PaymentMethodDetails.Card.Last4
+                return new PaymentResult(PaymentProvider.Stripe, charge.PaymentMethodDetails.Card.Last4) {
+                    Reason = charge.Outcome.Reason
                 };
             }
         }

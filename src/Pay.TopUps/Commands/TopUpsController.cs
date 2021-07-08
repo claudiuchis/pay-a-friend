@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using static Pay.TopUps.Commands.Commands;
 
-namespace App.TopUps.Commands
+namespace Pay.TopUps.Commands
 {
     [ApiController]
-    [Route("[api/topups]")]
+    [Route("[api/topup]")]
     public class TopUpsController : ControllerBase
     {
         private readonly ILogger<TopUpsController> _logger;
@@ -25,7 +25,7 @@ namespace App.TopUps.Commands
         }
 
         [HttpPost]
-        public Task SubmitTopUp([FromBody] SubmitTopUp command)
+        public Task SubmitTopUp([FromBody] V1.SubmitTopUp command)
             => _service.Handle(command, default);
     }
 }

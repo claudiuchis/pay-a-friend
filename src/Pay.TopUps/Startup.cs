@@ -11,9 +11,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Automapper;
+using AutoMapper;
+
+using Eventuous;
+using MongoDB.Driver;
+using EventStore.Client;
+using Eventuous.Subscriptions.EventStoreDB;
+using Eventuous.Projections.MongoDB;
+using Eventuous.EventStoreDB;
 
 using Pay.TopUps.Domain;
+using Pay.TopUps.Infrastructure;
+using Pay.TopUps.Projections;
 
 namespace Pay.TopUps
 {
@@ -95,7 +104,7 @@ namespace Pay.TopUps
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new VerificationDetailsProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
+                        new[] { new TopUpProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
@@ -130,5 +139,14 @@ namespace Pay.TopUps
             services.AddSingleton<IMongoDatabase>(database);
             return services;
         }        
+        public static ILoggerFactory GetLoggerFactory(this IServiceProvider provider)
+            => provider.GetRequiredService<ILoggerFactory>();
+        public static IAggregateStore GetAggregateStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IAggregateStore>();
+        public static IMongoDatabase GetMongoDatabase(this IServiceProvider provider)
+            => provider.GetRequiredService<IMongoDatabase>();
+        public static EventStoreClient GetEventStoreClient(this IServiceProvider provider)
+            => provider.GetRequiredService<EventStoreClient>();
+
     }
 }

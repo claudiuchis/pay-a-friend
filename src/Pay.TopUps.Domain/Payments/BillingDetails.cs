@@ -1,7 +1,7 @@
 
 namespace Pay.TopUps.Domain
 {
-    public record BillingDetails()
+    public record BillingDetails
     {
         public string AddressCity { get; init; }
         public string AddressCountry { get; init; }

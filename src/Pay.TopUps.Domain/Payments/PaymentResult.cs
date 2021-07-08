@@ -1,10 +1,8 @@
 namespace Pay.TopUps.Domain
 {
-    public record PaymentResult
+    public record PaymentResult(PaymentProvider PaymentProvider, string CardLast4Digits)
     {
-        public PaymentProvider PaymentProvider { get; init; }
         public string PaymentId { get; init; }
-        public string CardLast4Digits { get; init; }
-        public string Reason { get; init; }
+        public string Reason { get; init;}
     }
 }

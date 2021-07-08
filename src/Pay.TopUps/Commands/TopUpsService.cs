@@ -9,13 +9,16 @@ namespace Pay.TopUps.Commands
     {
         public TopUpsService(
             IAggregateStore store,
-            ICurrencyLookup currencyLookup
+            ICurrencyLookup currencyLookup,
+            IPaymentService paymentService
         ) : base(store)
         {
             OnNew<V1.SubmitTopUp>(
                 cmd => new TopUpId(cmd.TopUpId),
                 (topUp, cmd)
-                    => cmd.ChargeCard(
+                    => topUp.SubmitTopUp(
+                        paymentService,
+                        new TopUpId(cmd.TopUpId), 
                         new CardDetails(
                             cmd.Name,
                             cmd.Number,

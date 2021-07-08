@@ -1,4 +1,4 @@
-using Automapper;
+using AutoMapper;
 using Stripe;
 using Pay.TopUps.Domain;
 
@@ -13,10 +13,12 @@ namespace Pay.TopUps
         }
     }
 
-    public static TDestination Map<TSource, TDestination>(
-        this TDestination destination, TSource source)
+    public static class AutoMapperExtensions
     {
-        return Mapper.Map(source, destination);
+        public static TDestination Map<TSource, TDestination>(
+            this TDestination destination, TSource source, IMapper mapper)
+        {
+            return mapper.Map(source, destination);
+        }
     }
-
 }
