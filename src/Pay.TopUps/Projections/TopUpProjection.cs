@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Eventuous.Projections.MongoDB;
 
 using static Pay.TopUps.Projections.ReadModels;
-using static Pay.TopUps.Domain.Events;
+using static Pay.TopUps.StripePayments.Events;
 
 namespace Pay.TopUps.Projections
 {
@@ -20,11 +20,7 @@ namespace Pay.TopUps.Projections
                 V1.TopUpCompleted e
                     => new(new CollectionOperation<TopUpDetails>( (collection, cancellationToken) 
                         => collection.InsertOneAsync(new TopUpDetails(
-                                e.TopUpId, e.Amount, e.CurrencyCode, e.PaymentId, TopUpOutcome.Success, null), null, cancellationToken))),
-                V1.TopUpFailed e
-                    => new(new CollectionOperation<TopUpDetails>( (collection, cancellationToken) 
-                        => collection.InsertOneAsync(new TopUpDetails(
-                                e.TopUpId, e.Amount, e.CurrencyCode, null, TopUpOutcome.Fail, e.Reason), null, cancellationToken))),
+                                e.TransactionId, e.Amount, e.CurrencyCode, e.CustomerId, e.PaymentMethod, e.CardLast4Digits), null, cancellationToken))),
                 _ => NoOp
             };
         }

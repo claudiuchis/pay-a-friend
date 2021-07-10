@@ -11,19 +11,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using AutoMapper;
 
 using Eventuous;
 using MongoDB.Driver;
-using EventStore.Client;
 using Eventuous.Subscriptions.EventStoreDB;
 using Eventuous.Projections.MongoDB;
 using Eventuous.EventStoreDB;
+using Stripe;
 
-using Pay.TopUps.Domain;
-using Pay.TopUps.Infrastructure;
 using Pay.TopUps.Projections;
-using Pay.TopUps.Commands;
+using Pay.TopUps.StripePayments;
 
 namespace Pay.TopUps
 {
@@ -32,6 +29,8 @@ namespace Pay.TopUps
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            DotNetEnv.Env.Load();
+            StripeConfiguration.ApiKey = System.Environment.GetEnvironmentVariable("SK_TEST_KEY");
         }
 
         public IConfiguration Configuration { get; }
@@ -47,7 +46,6 @@ namespace Pay.TopUps
             });
 
             services
-                .AddAutoMapper(typeof(Startup))
                 .AddEventStore(Configuration["EventStore"])
                 .AddMongoStore(Configuration["MongoDB"])
                 .AddCustomServices()
@@ -84,9 +82,7 @@ namespace Pay.TopUps
         )
         {
             services
-                .AddSingleton<ICurrencyLookup, FixedCurrencyLookup>()
-                .AddSingleton<IPaymentService, StripePaymentsService>()
-                .AddSingleton<TopUpsService>();
+                .AddSingleton<StripeWebhookService>();
 
             return services;
         }
@@ -95,12 +91,13 @@ namespace Pay.TopUps
             this IServiceCollection services)
         {
             services
-                .AddHostedService<AllStreamSubscription>( provider => {
+                .AddHostedService<StreamSubscription>( provider => {
                     var subscriptionId = "topups.projections";
                     var loggerFactory = provider.GetLoggerFactory();
 
-                    return new AllStreamSubscription(
+                    return new StreamSubscription(
                         provider.GetEventStoreClient(),
+                        StreamNames.TopUpsStream,
                         subscriptionId,
                         new MongoCheckpointStore(
                             provider.GetMongoDatabase(),
@@ -122,12 +119,18 @@ namespace Pay.TopUps
         {
             EventMapping.MapEventTypes();
             
-            var settings = EventStoreClientSettings.Create(eventStoreConnectionString);
-            var eventStoreClient = new EventStoreClient(settings);
-            var eventStore = new EsdbEventStore(eventStoreClient);
-            services.AddSingleton(eventStoreClient);
-            var aggregateStore = new AggregateStore(eventStore, DefaultEventSerializer.Instance);
-            services.AddSingleton<IAggregateStore>(aggregateStore);
+            services
+                .AddSingleton( sp => {
+                    var settings = EventStore.Client.EventStoreClientSettings.Create(eventStoreConnectionString);
+                    return new EventStore.Client.EventStoreClient(settings);
+                })
+                .AddSingleton<IEventStore>( sp => {
+                    return new EsdbEventStore(sp.GetEventStoreClient());
+                })
+                .AddSingleton<IAggregateStore>(sp => {
+                    return new AggregateStore(sp.GetEventStore(), DefaultEventSerializer.Instance);
+                });
+
             return services;
         }
 
@@ -143,12 +146,14 @@ namespace Pay.TopUps
         }        
         public static ILoggerFactory GetLoggerFactory(this IServiceProvider provider)
             => provider.GetRequiredService<ILoggerFactory>();
+        public static IEventStore GetEventStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IEventStore>();
         public static IAggregateStore GetAggregateStore(this IServiceProvider provider)
             => provider.GetRequiredService<IAggregateStore>();
         public static IMongoDatabase GetMongoDatabase(this IServiceProvider provider)
             => provider.GetRequiredService<IMongoDatabase>();
-        public static EventStoreClient GetEventStoreClient(this IServiceProvider provider)
-            => provider.GetRequiredService<EventStoreClient>();
+        public static EventStore.Client.EventStoreClient GetEventStoreClient(this IServiceProvider provider)
+            => provider.GetRequiredService<EventStore.Client.EventStoreClient>();
 
     }
 }

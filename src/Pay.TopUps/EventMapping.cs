@@ -1,6 +1,5 @@
-using System;
 using Eventuous;
-using static Pay.TopUps.Domain.Events;
+using static Pay.TopUps.StripePayments.Events;
 
 namespace Pay.TopUps
 {
@@ -9,7 +8,6 @@ namespace Pay.TopUps
         public static void MapEventTypes()
         {
             TypeMap.AddType<V1.TopUpCompleted>("TopUpCompleted");
-            TypeMap.AddType<V1.TopUpFailed>("TopUpFailed");
         }
     }
 }

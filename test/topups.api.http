@@ -6,8 +6,8 @@ Content-Type: application/json
 
 {
     "TopUpId": "5a5c5387-8e60-4387-8949-8ff359df4aab",
-    "Amount": 20,
-    "CurrencyCode": "EUR",
+    "Amount": 20.00,
+    "CurrencyCode": "eur",
     "Name": "John Smith",
     "Number": "4242424242424242",
     "ExpMonth": "01",
