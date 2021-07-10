@@ -20,34 +20,3 @@ Content-Type: application/json
     "Email": "claudiu6@domain.com",
     "Password": "123"
 }
-
-###
-
-put {{host}}/basket/items
-Content-Type: application/json
-
-{
-    "BasketId": "860691c3-54de-479b-9a7c-e3e5cc474122",
-    "ProductId": "860691c3-54de-479b-9a7c-e3e5cc47413f",
-    "Quantity": 2
-}
-
-###
-
-delete {{host}}/basket/items
-Content-Type: application/json
-
-{
-    "BasketId": "860691c3-54de-479b-9a7c-e3e5cc474122",
-    "ProductId": "860691c3-54de-479b-9a7c-e3e5cc47413f"
-}
-
-###
-
-get {{host}}/basket/basketid?basketid=860691c3-54de-479b-9a7c-e3e5cc474122
-
-###
-
-get {{host}}/basket/customerid?customerid=860691c3-54de-479b-9a7c-e3e5cc474111
-
-###
