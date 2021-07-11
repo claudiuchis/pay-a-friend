@@ -19,7 +19,7 @@ namespace Pay.TopUps.StripePayments
                 var paymentIntent = stripeEvent.Data.Object as Stripe.PaymentIntent;
                 var integrationEvent = new V1.TopUpCompleted(
                     paymentIntent.Id,
-                    paymentIntent.Amount,
+                    paymentIntent.Amount / 100, // amount converted from cents to 2 decimal places
                     paymentIntent.Currency,
                     paymentIntent.CustomerId,
                     paymentIntent.PaymentMethod.Type,
