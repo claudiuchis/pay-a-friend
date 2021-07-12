@@ -2,7 +2,7 @@ namespace Pay.Prepaid.Reactors
 {
     public static class IntegrationEvents
     {
-        public static class v1
+        public static class V1
         {
             public record TopUpCompleted(
                 string TransactionId, 
@@ -11,6 +11,11 @@ namespace Pay.Prepaid.Reactors
                 string CustomerId,
                 string PaymentMethod,
                 string CardLast4Digits);
+
+            public record CustomerVerified(
+                string CustomerId,
+                string CurrencyCode
+            );
         } 
     }
 }

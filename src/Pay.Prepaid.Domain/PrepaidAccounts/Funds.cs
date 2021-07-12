@@ -1,6 +1,7 @@
 using System;
+using Pay.Prepaid.Domain.Shared;
 
-namespace Pay.Prepaid.Domain
+namespace Pay.Prepaid.Domain.PrepaidAccounts
 {
     public record Funds : Money
     {

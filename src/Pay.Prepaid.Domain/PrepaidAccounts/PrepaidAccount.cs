@@ -1,8 +1,10 @@
 ﻿using System;
 using Eventuous;
-using static Pay.Prepaid.Domain.Events;
 
-namespace Pay.Prepaid.Domain
+using static Pay.Prepaid.Domain.PrepaidAccounts.Events;
+using Pay.Prepaid.Domain.Shared;
+
+namespace Pay.Prepaid.Domain.PrepaidAccounts
 {
     public class PrepaidAccount: Aggregate<PrepaidAccountState, PrepaidAccountId>
     {

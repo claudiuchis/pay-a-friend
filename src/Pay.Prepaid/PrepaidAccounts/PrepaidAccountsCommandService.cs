@@ -1,13 +1,15 @@
 using Eventuous;
-using Pay.Prepaid.Domain;
+
+using Pay.Prepaid.Domain.Shared;
+using Pay.Prepaid.Domain.PrepaidAccounts;
 using static Pay.Prepaid.PrepaidAccounts.Commands;
 
 namespace Pay.Prepaid.PrepaidAccounts
 {
-    public class PrepaidAccountsService 
+    public class PrepaidAccountsCommandService 
         : ApplicationService<PrepaidAccount, PrepaidAccountState, PrepaidAccountId>
     {
-        public PrepaidAccountsService(
+        public PrepaidAccountsCommandService(
             IAggregateStore store,
             ICurrencyLookup currencyLookup
         ) : base (store)
@@ -27,7 +29,7 @@ namespace Pay.Prepaid.PrepaidAccounts
                 (prepaidAccount, cmd)
                     => prepaidAccount.CreditAccount(
                         new PrepaidAccountId(cmd.PrepaidAccountId),
-                        new Funds(cmd.Amount, cmd.CurrencyCode, currencyLookup)
+                        Funds.FromDecimal(cmd.Amount, cmd.CurrencyCode, currencyLookup)
                     )
             );
 
@@ -36,7 +38,7 @@ namespace Pay.Prepaid.PrepaidAccounts
                 (prepaidAccount, cmd)
                     => prepaidAccount.DebitAccount(
                         new PrepaidAccountId(cmd.PrepaidAccountId),
-                        new Funds(cmd.Amount, cmd.CurrencyCode, currencyLookup)
+                        Funds.FromDecimal(cmd.Amount, cmd.CurrencyCode, currencyLookup)
                     )
             );
         }

@@ -2,47 +2,39 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Eventuous.Subscriptions;
-using Microsoft.AspNetCore.Mvc;
 
 using static Pay.Prepaid.Reactors.IntegrationEvents;
 using Pay.Prepaid.PrepaidAccounts;
-using Pay.Prepaid.Domain.PrepaidAccounts;
 
 namespace Pay.Prepaid.Reactors
 {
-    public class TopUpReactor : IEventHandler
+    public class CustomerVerificationReactor : IEventHandler
     {
         public string SubscriptionId { get; }
         PrepaidAccountsCommandService _prepaidAccountsCommandService;
-        PrepaidAccountsQueryService _prepaidAccountsQueryService;
-
-        public TopUpReactor(
+        public CustomerVerificationReactor(
             string subscriptionGroup,
-            PrepaidAccountsCommandService prepaidAccountsCommandService,
-            PrepaidAccountsQueryService prepaidAccountsQueryService)
+            PrepaidAccountsCommandService prepaidAccountsCommandService)
         {
             SubscriptionId = subscriptionGroup;
             _prepaidAccountsCommandService = prepaidAccountsCommandService;
-            _prepaidAccountsQueryService = prepaidAccountsQueryService;
         }
         public async Task HandleEvent(object @event, long? position, CancellationToken cancellationToken)
         {
             var result = @event switch 
             {
-                V1.TopUpCompleted completed => 
+                V1.CustomerVerified verified => 
                     _prepaidAccountsCommandService.Handle(
-                        new Commands.V1.CreditPrepaidAccount(
-                            _prepaidAccountsQueryService.GetPrepaidAccountForCustomer(completed.CustomerId),
-                            completed.Amount,
-                            completed.CurrencyCode,
-                            PrepaidTransactionType.TopUp,
-                            completed.TransactionId
+                        new Commands.V1.CreatePrepaidAccount(
+                            Guid.NewGuid().ToString(),
+                            verified.CustomerId,
+                            verified.CurrencyCode
                         ),
                         cancellationToken
                     ),
                 _ => Task.CompletedTask
             };
             await result;
-        }
+        }  
     }
 }

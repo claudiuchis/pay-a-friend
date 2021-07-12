@@ -12,6 +12,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
+using Eventuous;
+using MongoDB.Driver;
+using Eventuous.Subscriptions.EventStoreDB;
+using Eventuous.Projections.MongoDB;
+using Eventuous.EventStoreDB;
+
+using Pay.Prepaid.PrepaidAccounts;
+using Pay.Prepaid.Reactors;
+using Pay.Prepaid.Projections;
+
 namespace Pay.Prepaid
 {
     public class Startup
@@ -32,6 +42,13 @@ namespace Pay.Prepaid
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Pay.Prepaid", Version = "v1" });
             });
+
+            services
+                .AddEventStore(Configuration["EventStore"])
+                .AddMongoStore(Configuration["MongoDB"])
+                .AddCustomServices()
+                .AddProjections()
+                .AddReactions();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,4 +73,121 @@ namespace Pay.Prepaid
             });
         }
     }
+
+    public static class StartupExtensions
+    {
+        public static IServiceCollection AddCustomServices(
+            this IServiceCollection services
+        )
+        {
+            services
+                .AddSingleton<PrepaidAccountsCommandService>()
+                .AddSingleton<PrepaidAccountsQueryService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddReactions(
+            this IServiceCollection services)
+        {
+            services
+                .AddHostedService<StreamSubscription>( provider => {
+                    var subscriptionId = "topups.reactions";
+                    var loggerFactory = provider.GetLoggerFactory();
+
+                    return new StreamSubscription(
+                        provider.GetEventStoreClient(),
+                        StreamNames.TopUpsStream,
+                        subscriptionId,
+                        new MongoCheckpointStore(
+                            provider.GetMongoDatabase(),
+                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        ),
+                        new[] { new TopUpReactor(
+                            subscriptionId, 
+                            provider.GetRequiredService<PrepaidAccountsCommandService>(),
+                            provider.GetRequiredService<PrepaidAccountsQueryService>()
+                        )},
+                        DefaultEventSerializer.Instance,
+                        loggerFactory
+                    );
+
+                });
+
+            return services;
+        }        
+
+        public static IServiceCollection AddProjections(
+            this IServiceCollection services)
+        {
+            services
+                .AddHostedService<AllStreamSubscription>( provider => {
+                    var subscriptionId = "prepaid.projections";
+                    var loggerFactory = provider.GetLoggerFactory();
+
+                    return new AllStreamSubscription(
+                        provider.GetEventStoreClient(),
+                        subscriptionId,
+                        new MongoCheckpointStore(
+                            provider.GetMongoDatabase(),
+                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        ),
+                        new[] { new PrepaidAccountProjector(
+                            provider.GetMongoDatabase(),
+                            subscriptionId,
+                            loggerFactory
+                        )},
+                        DefaultEventSerializer.Instance,
+                        loggerFactory
+                    );
+
+                });
+
+            return services;
+        }        
+
+        public static IServiceCollection AddEventStore(
+            this IServiceCollection services,
+            string eventStoreConnectionString
+        )
+        {
+            EventMapping.MapEventTypes();
+            
+            services
+                .AddSingleton( sp => {
+                    var settings = EventStore.Client.EventStoreClientSettings.Create(eventStoreConnectionString);
+                    return new EventStore.Client.EventStoreClient(settings);
+                })
+                .AddSingleton<IEventStore>( sp => {
+                    return new EsdbEventStore(sp.GetEventStoreClient());
+                })
+                .AddSingleton<IAggregateStore>(sp => {
+                    return new AggregateStore(sp.GetEventStore(), DefaultEventSerializer.Instance);
+                });
+
+            return services;
+        }
+
+        public static IServiceCollection AddMongoStore(
+            this IServiceCollection services,
+            string mongoDBConnectionString
+        )
+        {
+            var mongoClient = new MongoClient(mongoDBConnectionString);
+            var database = mongoClient.GetDatabase("readside");
+            services.AddSingleton<IMongoDatabase>(database);
+            return services;
+        }        
+        public static ILoggerFactory GetLoggerFactory(this IServiceProvider provider)
+            => provider.GetRequiredService<ILoggerFactory>();
+        public static IEventStore GetEventStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IEventStore>();
+        public static IAggregateStore GetAggregateStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IAggregateStore>();
+        public static IMongoDatabase GetMongoDatabase(this IServiceProvider provider)
+            => provider.GetRequiredService<IMongoDatabase>();
+        public static EventStore.Client.EventStoreClient GetEventStoreClient(this IServiceProvider provider)
+            => provider.GetRequiredService<EventStore.Client.EventStoreClient>();
+
+    }    
 }

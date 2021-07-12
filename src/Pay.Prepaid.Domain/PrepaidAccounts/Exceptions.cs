@@ -1,6 +1,6 @@
 using System;
 
-namespace Pay.Prepaid.Domain
+namespace Pay.Prepaid.Domain.PrepaidAccounts
 {
     public class InsufficientFundsException : Exception
     {

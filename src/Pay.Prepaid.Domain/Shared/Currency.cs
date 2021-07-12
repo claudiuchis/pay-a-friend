@@ -1,4 +1,4 @@
-namespace Pay.Prepaid.Domain
+namespace Pay.Prepaid.Domain.Shared
 {
     public record Currency
     {

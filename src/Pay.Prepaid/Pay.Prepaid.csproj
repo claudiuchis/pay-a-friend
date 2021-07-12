@@ -7,6 +7,12 @@
   <ItemGroup>
     <PackageReference Include="Eventuous" Version="0.4.5" />
     <PackageReference Include="Eventuous.Subscriptions" Version="0.4.5" />
+    <PackageReference Include="EventStore.Client" Version="21.2.0" />
+    <PackageReference Include="Eventuous.EventStoreDB" Version="0.4.5" />
+    <PackageReference Include="EVentuous.Projections.MongoDB" Version="0.4.5" />
+    <PackageReference Include="Eventuous.Subscriptions.EventStoreDB" Version="0.4.5" />
+    <PackageReference Include="MongoDB.Driver" Version="2.12.4" />
+
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
