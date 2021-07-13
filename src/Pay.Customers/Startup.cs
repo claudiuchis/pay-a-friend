@@ -41,7 +41,7 @@ namespace Pay.Verification
                 .AddCustomAuthorization()
                 .AddEventStore(Configuration["EventStore"])
                 .AddMongoStore(Configuration["MongoDB"])
-                .AddServices()
+                .AddCustomServices()
                 .AddProjections();
         }
 
@@ -94,19 +94,12 @@ namespace Pay.Verification
             return services;
         }
 
-        public static IServiceCollection AddServices(
+        public static IServiceCollection AddCustomServices(
             this IServiceCollection services
         )
         {
             services
-                .AddSingleton(
-                    c => 
-                    {
-                        return new VerificationService(
-                            c.GetAggregateStore()
-                        );
-                    }
-                );
+                .AddSingleton<CustomersCommandService>();
 
             return services;
         }
@@ -126,7 +119,7 @@ namespace Pay.Verification
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new VerificationDetailsProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
+                        new[] { new CustomerProjection(provider.GetMongoDatabase(), subscriptionId, loggerFactory)},
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );

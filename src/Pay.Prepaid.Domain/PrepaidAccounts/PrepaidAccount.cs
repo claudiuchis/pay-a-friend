@@ -11,8 +11,11 @@ namespace Pay.Prepaid.Domain.PrepaidAccounts
         public void CreatePrepaidAccount(
             PrepaidAccountId accountId, 
             CustomerId customerId, 
-            Currency currency)
+            string countryCode,
+            ICurrencyLookup currencyLookup)
         {
+            var currency = currencyLookup.FindCurrencyByCountry(countryCode);
+            
             Apply(new V1.PrepaidAccountCreated(
                 accountId,
                 customerId,

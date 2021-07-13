@@ -8,11 +8,11 @@ using Pay.Prepaid.PrepaidAccounts;
 
 namespace Pay.Prepaid.Reactors
 {
-    public class CustomerVerificationReactor : IEventHandler
+    public class CustomerReactor : IEventHandler
     {
         public string SubscriptionId { get; }
         PrepaidAccountsCommandService _prepaidAccountsCommandService;
-        public CustomerVerificationReactor(
+        public CustomerReactor(
             string subscriptionGroup,
             PrepaidAccountsCommandService prepaidAccountsCommandService)
         {
@@ -23,12 +23,12 @@ namespace Pay.Prepaid.Reactors
         {
             var result = @event switch 
             {
-                V1.CustomerVerified verified => 
+                V1.CustomerDetailsVerified verified => 
                     _prepaidAccountsCommandService.Handle(
                         new Commands.V1.CreatePrepaidAccount(
                             Guid.NewGuid().ToString(),
                             verified.CustomerId,
-                            verified.CurrencyCode
+                            verified.CountryCode
                         ),
                         cancellationToken
                     ),

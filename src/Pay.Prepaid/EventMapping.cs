@@ -8,7 +8,7 @@ namespace Pay.Prepaid
     {
         public static void MapEventTypes()
         {
-            TypeMap.AddType<IntegrationEvents.V1.CustomerVerified>("CustomerVerified");
+            TypeMap.AddType<IntegrationEvents.V1.CustomerDetailsVerified>("CustomerDetailsVerified");
             TypeMap.AddType<IntegrationEvents.V1.TopUpCompleted>("TopUpCompleted");
             TypeMap.AddType<Events.V1.PrepaidAccountCreated>("PrepaidAccountCreated");
             TypeMap.AddType<Events.V1.PrepaidAccountCredited>("PrepaidAccountCredited");

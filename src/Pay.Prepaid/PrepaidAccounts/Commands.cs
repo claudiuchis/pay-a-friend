@@ -7,7 +7,7 @@ namespace Pay.Prepaid.PrepaidAccounts
             public record CreatePrepaidAccount(
                 string PrepaidAccountId, 
                 string CustomerId, 
-                string CurrencyCode);
+                string CountryCode);
             public record CreditPrepaidAccount(
                 string PrepaidAccountId, 
                 decimal Amount, 

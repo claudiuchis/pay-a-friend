@@ -12,9 +12,9 @@ namespace Pay.Prepaid.Reactors
                 string PaymentMethod,
                 string CardLast4Digits);
 
-            public record CustomerVerified(
+            public record CustomerDetailsVerified(
                 string CustomerId,
-                string CurrencyCode
+                string CountryCode
             );
         } 
     }

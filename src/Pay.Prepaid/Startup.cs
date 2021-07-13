@@ -21,6 +21,8 @@ using Eventuous.EventStoreDB;
 using Pay.Prepaid.PrepaidAccounts;
 using Pay.Prepaid.Reactors;
 using Pay.Prepaid.Projections;
+using Pay.Prepaid.Domain.Shared;
+using Pay.Prepaid.Infrastructure;
 
 namespace Pay.Prepaid
 {
@@ -82,7 +84,8 @@ namespace Pay.Prepaid
         {
             services
                 .AddSingleton<PrepaidAccountsCommandService>()
-                .AddSingleton<PrepaidAccountsQueryService>();
+                .AddSingleton<PrepaidAccountsQueryService>()
+                .AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
 
             return services;
         }

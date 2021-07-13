@@ -20,8 +20,8 @@ namespace Pay.Prepaid.PrepaidAccounts
                     => prepaidAccount.CreatePrepaidAccount(
                         new PrepaidAccountId(cmd.PrepaidAccountId),
                         new CustomerId(cmd.CustomerId),
-                        new Currency{ CurrencyCode = cmd.CurrencyCode}
-                    )
+                        cmd.CountryCode,
+                        currencyLookup)
             );
 
             OnExisting<V1.CreditPrepaidAccount>(

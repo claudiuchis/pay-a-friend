@@ -10,8 +10,17 @@ namespace Pay.Verification.Domain
         public string CountyState { get; }
         public string Code { get; }
         public string Country { get; }
+        public string CountryCode { get; }
 
-        public Address(string address1, string address2, string cityTown, string countyState, string code, string country)
+        public Address(
+            string address1, 
+            string address2, 
+            string cityTown, 
+            string countyState, 
+            string code, 
+            string country,
+            string countryCode
+        )
         {
             if (string.IsNullOrWhiteSpace(address1))
                 throw new ArgumentNullException(nameof(address1));
@@ -21,6 +30,8 @@ namespace Pay.Verification.Domain
                 throw new ArgumentNullException(nameof(countyState));
             if (string.IsNullOrWhiteSpace(country))
                 throw new ArgumentNullException(nameof(country));
+            if (string.IsNullOrWhiteSpace(countryCode))
+                throw new ArgumentNullException(nameof(countryCode));
 
             Address1 = address1;
             Address2 = address2;
@@ -28,6 +39,7 @@ namespace Pay.Verification.Domain
             CountyState = countyState;
             Code = code;
             Country = country;
+            CountryCode = countryCode;
         }
     }
 }

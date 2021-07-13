@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Pay.Verification.Domain\Pay.Verification.Domain.csproj" />
+    <ProjectReference Include="..\Pay.Customers.Domain\Pay.Customers.Domain.csproj" />
   </ItemGroup>
 
 </Project>
