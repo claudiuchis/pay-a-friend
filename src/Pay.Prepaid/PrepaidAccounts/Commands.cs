@@ -20,6 +20,13 @@ namespace Pay.Prepaid.PrepaidAccounts
                 string CurrencyCode,
                 string TransactionType,
                 string TransactionId);
+
+            public record TransferFunds(
+                string SourcePrepaidAccountId,
+                string DestinationPrepaidAccountId,
+                decimal Amount,
+                string CurrencyCode
+            );
         }
     }
 }
