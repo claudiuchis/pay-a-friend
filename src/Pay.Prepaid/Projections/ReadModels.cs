@@ -18,5 +18,13 @@ namespace Pay.Prepaid.Projections
             decimal Balance,
             IEnumerable<Transaction> Transactions
         ) : ProjectedDocument(PrepaidAccountId);
+
+        public record TransferOrder(
+            string TransferOrderId,
+            string PayorPrepaidAccountId,
+            string PayeePrepaidAccountId,
+            decimal Amount,
+            string CurrencyCode
+        ) : ProjectedDocument(TransferOrderId);
     }
 }

@@ -14,19 +14,23 @@ namespace Pay.Prepaid.PrepaidAccounts
                 string CurrencyCode,
                 string TransactionType,
                 string TransactionId);
+            public record PlaceHoldOnPrepaidAccount(
+                string PrepaidAccountId, 
+                decimal Amount, 
+                string CurrencyCode,
+                string TransactionType,
+                string TransactionId);
+            public record ReleaseHoldOnPrepaidAccount(
+                string PrepaidAccountId, 
+                string TransactionId,
+                string Reason);
+
             public record DebitPrepaidAccount(
                 string PrepaidAccountId, 
                 decimal Amount, 
                 string CurrencyCode,
                 string TransactionType,
                 string TransactionId);
-
-            public record TransferFunds(
-                string SourcePrepaidAccountId,
-                string DestinationPrepaidAccountId,
-                decimal Amount,
-                string CurrencyCode
-            );
         }
     }
 }

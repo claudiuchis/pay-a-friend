@@ -24,24 +24,18 @@ namespace Pay.Prepaid.TransferOrders
                 )
             );
 
-            OnExisting<V1.AcknowlegePayorAccountDebited>(
+            OnExisting<V1.CompleteTransferOrder>(
                 cmd => new TransferOrderId(cmd.TransferOrderId),
-                (order, cmd) => order.AcknowledgePayorAccountDebited(
+                (order, cmd) => order.CompleteOrder(
                     new TransferOrderId(cmd.TransferOrderId)
                 )
             );
 
-            OnExisting<V1.AcknowledgePayeeAccountCredited>(
+            OnExisting<V1.FailTranferOrder>(
                 cmd => new TransferOrderId(cmd.TransferOrderId),
-                (order, cmd) => order.AcknowledgePayeeAccountCredited(
-                    new TransferOrderId(cmd.TransferOrderId)
-                )
-            );
-
-            OnExisting<V1.AcknowledgeOrderFailed>(
-                cmd => new TransferOrderId(cmd.TransferOrderId),
-                (order, cmd) => order.AcknowledgeOrderFailed(
+                (order, cmd) => order.FailTranferOrder(
                     new TransferOrderId(cmd.TransferOrderId),
+                    cmd.Stage,
                     cmd.Reason
                 )
             );

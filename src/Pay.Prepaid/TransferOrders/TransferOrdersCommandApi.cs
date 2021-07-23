@@ -1,21 +1,24 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
+using static Pay.Prepaid.TransferOrders.Commands.V1;
+
 namespace Pay.Prepaid.TransferOrders
 {
     [ApiController]
-    [Route("api/prepaid")]
-
+    [Route("api/prepaid/transfer")]
     public class PrepaidAccountsCommandApi : ControllerBase 
     {
-        public PrepaidAccountsCommandApi()
+        TransferOrdersCommandService _transferOrdersCommandService;
+        public PrepaidAccountsCommandApi(
+            TransferOrdersCommandService transferOrdersCommandService
+        )
         {
-
+            _transferOrdersCommandService = transferOrdersCommandService;
         }
 
-        public async Task<IActionResult> TransferFunds()
-        {
-            
-        }
+        [HttpPost]
+        public Task CreateTransferOrder([FromBody] CreateTransferOrder command)
+            => _transferOrdersCommandService.Handle(command, default);
     }
 }

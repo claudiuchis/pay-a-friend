@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Eventuous;
 using Pay.Prepaid.Domain.PrepaidAccounts;
 using static Pay.Prepaid.Domain.TransferOrders.Events;
@@ -23,31 +24,23 @@ namespace Pay.Prepaid.Domain.TransferOrders
             ));
         }
 
-        public void AcknowledgePayorAccountDebited(
+        public void CompleteOrder(
             TransferOrderId orderId
         )
         {
-            Apply(new V1.PayorAccountDebited(
+            Apply(new V1.TransferOrderCompleted(
                 orderId
             ));
         }
-
-        public void AcknowledgePayeeAccountCredited(
-            TransferOrderId orderId
-        )
-        {
-            Apply(new V1.PayeeAccountCredited(
-                orderId
-            ));
-        }
-
-        public void AcknowledgeOrderFailed(
+        public void FailTranferOrder(
             TransferOrderId orderId,
+            string stage,
             string reason
         )
         {
-            Apply(new V1.OrderFailed(
+            Apply(new V1.TransferOrderFailed(
                 orderId,
+                stage,
                 reason
             ));
         }
@@ -60,8 +53,7 @@ namespace Pay.Prepaid.Domain.TransferOrders
         {
             NotStarted,
             OrderPlaced,
-            PayorAccountDebited,
-            PayeeAccountCredited,
+            OrderCompleted,
             OrderFailed
         };
 
@@ -73,6 +65,7 @@ namespace Pay.Prepaid.Domain.TransferOrders
         public PrepaidAccountId PayorAccountId { get; init; }
         public PrepaidAccountId PayeeAccountId { get; init; }
         public string Reason { get; init; }
+        public string Stage { get; init; }
 
         public override TransferOrderState When(object @event)
             => @event switch {
@@ -86,24 +79,21 @@ namespace Pay.Prepaid.Domain.TransferOrders
                         },
                         _ => this
                     },
-                V1.PayorAccountDebited debited => 
+                V1.TransferOrderCompleted completed => 
                     OrderStatus switch {
                         TransferOrderStatus.OrderPlaced => this with {
-                            OrderStatus = TransferOrderStatus.PayorAccountDebited
+                            OrderStatus = TransferOrderStatus.OrderCompleted
                         },
                         _ => this
                     },
-                V1.PayeeAccountCredited credited => 
+                V1.TransferOrderFailed failed => 
                     OrderStatus switch {
-                        TransferOrderStatus.PayorAccountDebited => this with {
-                            OrderStatus = TransferOrderStatus.PayeeAccountCredited
+                        TransferOrderStatus.OrderPlaced => this with {
+                            OrderStatus = TransferOrderStatus.OrderFailed,
+                            Reason = failed.Reason
                         },
                         _ => this
                     },
-                V1.OrderFailed failed => this with {
-                    OrderStatus = TransferOrderStatus.OrderFailed,
-                    Reason = failed.Reason
-                },
                 _ => this
             };
     }

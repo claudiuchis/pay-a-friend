@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using static Pay.Prepaid.Reactors.IntegrationEvents;
 using Pay.Prepaid.PrepaidAccounts;
-using Pay.Prepaid.Domain.PrepaidAccounts;
+using Pay.Prepaid.Domain.PrepaidTransactions;
 
 namespace Pay.Prepaid.Reactors
 {

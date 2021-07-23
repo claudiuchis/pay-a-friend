@@ -12,16 +12,13 @@ namespace Pay.Prepaid.TransferOrders
                 string CurrencyCode
             );
 
-            public record AcknowlegePayorAccountDebited(
+            public record CompleteTransferOrder(
                 string TransferOrderId
             );
 
-            public record AcknowledgePayeeAccountCredited(
-                string TransferOrderId
-            );
-
-            public record AcknowledgeOrderFailed(
+            public record FailTranferOrder(
                 string TransferOrderId,
+                string Stage,
                 string Reason
             );
         }

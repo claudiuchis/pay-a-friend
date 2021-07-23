@@ -12,20 +12,15 @@ namespace Pay.Prepaid.Domain.TransferOrders
                 string CurrencyCode,
                 decimal Amount
             );
-
-            public record PayorAccountDebited
+            public record TransferOrderCompleted
             (
                 string TransferOrderId
             );
 
-            public record PayeeAccountCredited
-            (
-                string TransferOrderId
-            );
-
-            public record OrderFailed
+            public record TransferOrderFailed
             (
                 string TransferOrderId,
+                string Stage,
                 string Reason
             );
         }
