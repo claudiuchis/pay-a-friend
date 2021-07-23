@@ -43,6 +43,9 @@ namespace Pay.Prepaid.Domain.PrepaidAccounts
             Funds amount
         )
         {
+            if (State.Available < amount )
+                throw new InsufficientFundsException("Insufficient funds in the account.");
+
             Apply(new V1.PrepaidAccountHoldPlaced(
                 this.GetId(),
                 amount.Amount,
