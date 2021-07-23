@@ -12,8 +12,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-using Eventuous;
 using MongoDB.Driver;
+
+using Eventuous;
+using Eventuous.Subscriptions;
 using Eventuous.Subscriptions.EventStoreDB;
 using Eventuous.Projections.MongoDB;
 using Eventuous.EventStoreDB;
@@ -23,6 +25,7 @@ using Pay.Prepaid.Reactors;
 using Pay.Prepaid.Projections;
 using Pay.Prepaid.Domain.Shared;
 using Pay.Prepaid.Infrastructure;
+using Pay.Prepaid.TransferOrders;
 
 namespace Pay.Prepaid
 {
@@ -85,7 +88,9 @@ namespace Pay.Prepaid
             services
                 .AddSingleton<PrepaidAccountsCommandService>()
                 .AddSingleton<PrepaidAccountsQueryService>()
-                .AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
+                .AddSingleton<ICurrencyLookup, FixedCurrencyLookup>()
+                .AddSingleton<TransferOrdersCommandService>()
+                .AddSingleton<TransferOrdersQueryService>();
 
             return services;
         }
@@ -106,11 +111,19 @@ namespace Pay.Prepaid
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new TopUpReactor(
-                            subscriptionId, 
-                            provider.GetRequiredService<PrepaidAccountsCommandService>(),
-                            provider.GetRequiredService<PrepaidAccountsQueryService>()
-                        )},
+                        new IEventHandler[] { 
+                            new TopUpReactor(
+                                subscriptionId, 
+                                provider.GetRequiredService<PrepaidAccountsCommandService>(),
+                                provider.GetRequiredService<PrepaidAccountsQueryService>()
+                            ),
+                            new TransferReactor(
+                                subscriptionId, 
+                                provider.GetRequiredService<TransferOrdersCommandService>(),
+                                provider.GetRequiredService<PrepaidAccountsCommandService>(),
+                                provider.GetRequiredService<TransferOrdersQueryService>()
+                            )
+                        },
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
@@ -135,11 +148,17 @@ namespace Pay.Prepaid
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
                         ),
-                        new[] { new PrepaidAccountProjector(
-                            provider.GetMongoDatabase(),
-                            subscriptionId,
-                            loggerFactory
-                        )},
+                        new IEventHandler[] { 
+                            new PrepaidAccountProjector(
+                                provider.GetMongoDatabase(),
+                                subscriptionId,
+                                loggerFactory),
+                            new TransferOrderProjector(
+                                provider.GetMongoDatabase(),
+                                subscriptionId,
+                                loggerFactory
+                            )
+                        },
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
