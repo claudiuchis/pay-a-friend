@@ -24,7 +24,10 @@ namespace Pay.Prepaid.Projections
             string PayorPrepaidAccountId,
             string PayeePrepaidAccountId,
             decimal Amount,
-            string CurrencyCode
+            string CurrencyCode,
+            string Status,
+            string Reason,
+            string Stage
         ) : ProjectedDocument(TransferOrderId);
     }
 }

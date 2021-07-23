@@ -19,7 +19,7 @@ namespace Pay.Prepaid.TransferOrders
         }
 
         [HttpGet]
-        public Task<TransferOrder> GetOrderStatus([FromBody] string transferOrderId)
+        public Task<TransferOrder> GetOrderStatus([FromQuery] string transferOrderId)
             => _transferOrdersQueryService.GetTransferOrder(transferOrderId);
     }
 }
