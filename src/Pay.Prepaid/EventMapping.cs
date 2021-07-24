@@ -1,6 +1,7 @@
 using Eventuous;
 using Pay.Prepaid.Reactors;
 using Pay.Prepaid.Domain.PrepaidAccounts;
+using static Pay.Prepaid.Domain.TransferOrders.Events;
 
 namespace Pay.Prepaid
 {
@@ -13,6 +14,11 @@ namespace Pay.Prepaid
             TypeMap.AddType<Events.V1.PrepaidAccountCreated>("PrepaidAccountCreated");
             TypeMap.AddType<Events.V1.PrepaidAccountCredited>("PrepaidAccountCredited");
             TypeMap.AddType<Events.V1.PrepaidAccountDebited>("PrepaidAccountDebited");
+            TypeMap.AddType<Events.V1.PrepaidAccountHoldPlaced>("PrepaidAccountHoldPlaced");
+            TypeMap.AddType<Events.V1.PrepaidAccountHoldReleased>("PrepaidAccountHoldReleased");
+            TypeMap.AddType<V1.TransferOrderCreated>("TransferOrderCreated");
+            TypeMap.AddType<V1.TransferOrderCompleted>("TransferOrderCompleted");
+            TypeMap.AddType<V1.TransferOrderFailed>("TransferOrderFailed");
         }
     }
 }

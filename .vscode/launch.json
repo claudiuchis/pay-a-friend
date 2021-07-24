@@ -78,6 +78,23 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
         },
+        {
+            "name": "Pay.Prepaid",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-topups",
+            "program": "${workspaceFolder}/src/Pay.Prepaid/bin/Debug/net5.0/Pay.Prepaid.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Pay.Prepaid",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
 
     ],
     "compounds": [

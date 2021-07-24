@@ -18,7 +18,9 @@ namespace Pay.Prepaid.TransferOrders
         }
 
         [HttpPost]
-        public Task CreateTransferOrder([FromBody] CreateTransferOrder command)
-            => _transferOrdersCommandService.Handle(command, default);
+        public async Task CreateTransferOrder([FromBody] CreateTransferOrder command)
+        {
+            await _transferOrdersCommandService.Handle(command, default);
+        }
     }
 }

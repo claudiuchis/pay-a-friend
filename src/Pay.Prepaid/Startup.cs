@@ -99,7 +99,7 @@ namespace Pay.Prepaid
             this IServiceCollection services)
         {
             services
-                .AddHostedService<StreamSubscription>( provider => {
+                .AddSingleton<IHostedService, StreamSubscription>( provider => {
                     var subscriptionId = "topups.reactions";
                     var loggerFactory = provider.GetLoggerFactory();
 
@@ -116,7 +116,24 @@ namespace Pay.Prepaid
                                 subscriptionId, 
                                 provider.GetRequiredService<PrepaidAccountsCommandService>(),
                                 provider.GetRequiredService<PrepaidAccountsQueryService>()
-                            ),
+                            )
+                        },
+                        DefaultEventSerializer.Instance,
+                        loggerFactory
+                    );
+                })
+                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
+                    var subscriptionId = "transfers.reactions";
+                    var loggerFactory = provider.GetLoggerFactory();
+
+                    return new AllStreamSubscription(
+                        provider.GetEventStoreClient(),
+                        subscriptionId,
+                        new MongoCheckpointStore(
+                            provider.GetMongoDatabase(),
+                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        ),
+                        new IEventHandler[] { 
                             new TransferReactor(
                                 subscriptionId, 
                                 provider.GetRequiredService<TransferOrdersCommandService>(),
@@ -127,7 +144,6 @@ namespace Pay.Prepaid
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
-
                 });
 
             return services;
@@ -137,7 +153,7 @@ namespace Pay.Prepaid
             this IServiceCollection services)
         {
             services
-                .AddHostedService<AllStreamSubscription>( provider => {
+                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
                     var subscriptionId = "prepaid.projections";
                     var loggerFactory = provider.GetLoggerFactory();
 

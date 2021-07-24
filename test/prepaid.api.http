@@ -1,0 +1,14 @@
+@host = https://localhost:5007
+
+###
+post {{host}}/api/prepaid/transfer
+Content-Type: application/json
+
+{
+    "TransferOrderId": "5a5c5387-8e60-4387-8949-8ff359df4aae",
+    "PayorPrepaidAccountId": "5a5c5387-8e60-4387-8949-8ff359df4aae",
+    "PayeePrepaidAccountId": "5a5c5387-8e60-4387-8949-8ff359df4aae",
+    "Amount": 20.00,
+    "CurrencyCode": "EUR"
+}
+
