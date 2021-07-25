@@ -14,9 +14,14 @@ namespace Pay.Identity.Registration
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string returnUrl)
         {
-            return View();
+            var vm = new RegisterViewModel
+            {
+                ReturnUrl = returnUrl
+            };
+
+            return View(vm);
         }
 
         [HttpPost]
