@@ -144,6 +144,27 @@ namespace Pay.Prepaid
                         DefaultEventSerializer.Instance,
                         loggerFactory
                     );
+                })
+                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
+                    var subscriptionId = "customers.reactions";
+                    var loggerFactory = provider.GetLoggerFactory();
+
+                    return new AllStreamSubscription(
+                        provider.GetEventStoreClient(),
+                        subscriptionId,
+                        new MongoCheckpointStore(
+                            provider.GetMongoDatabase(),
+                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        ),
+                        new IEventHandler[] { 
+                            new CustomerReactor(
+                                subscriptionId, 
+                                provider.GetRequiredService<PrepaidAccountsCommandService>()
+                            )
+                        },
+                        DefaultEventSerializer.Instance,
+                        loggerFactory
+                    );
                 });
 
             return services;

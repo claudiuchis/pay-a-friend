@@ -69,14 +69,14 @@ namespace Pay.Prepaid.Domain.Shared
                 throw new CurrencyMismatchException(
                     "Cannot compare amounts with different currencies ({Currency} vs {compareEnd.Currency})"
                 );
-            return (Amount - compareEnd.Amount > 0); 
+            return Amount > compareEnd.Amount; 
         }
 
         public static Money operator +(Money summand1, Money summand2) => summand1.Add(summand2);
 
         public static Money operator -(Money minuend, Money subtrahend) => minuend.Subtract(subtrahend);
-        public static bool operator <(Money left, Money right) => left.Compare(right); 
-        public static bool operator >(Money left, Money right) => !left.Compare(right); 
+        public static bool operator <(Money left, Money right) => !left.Compare(right); 
+        public static bool operator >(Money left, Money right) => left.Compare(right); 
 
         public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
     }

@@ -87,7 +87,7 @@ namespace Pay.Verification
                 options.AddPolicy("ApiScope", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "pay.verification");
+                    policy.RequireClaim("scope", "pay.customers");
                 });
             });
             

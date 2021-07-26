@@ -26,12 +26,12 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "build-verification",
+            "label": "build-customers",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Pay.Verification/Pay.Verification.csproj",
+                "${workspaceFolder}/src/Pay.Customers/Pay.Customers.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

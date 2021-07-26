@@ -110,6 +110,7 @@ namespace Pay.Prepaid.Domain.PrepaidAccounts
                     CustomerId = new CustomerId(created.CustomerId),
                     Currency = new Currency { CurrencyCode = created.CurrencyCode},
                     Balance = new Funds(0, created.CurrencyCode),
+                    Available = new Funds(0, created.CurrencyCode),
                     Status = AccountStatus.Active,
                     MoneyHolds = System.Array.Empty<MoneyHold>()
                 },

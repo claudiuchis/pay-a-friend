@@ -17,7 +17,7 @@ namespace Pay.Identity
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             {
-                new ApiScope("pay.verification", "Pay.Verification")
+                new ApiScope("pay.customers", "Pay.Customers")
             };
 
         public static IEnumerable<Client> Clients =>
@@ -30,6 +30,7 @@ namespace Pay.Identity
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.Code,
+                    //AllowedGrantTypes = GrantTypes.ClientCredentials,
                     
                     // where to redirect to after login
                     RedirectUris = { "https://localhost:6001/signin-oidc" },
@@ -41,7 +42,7 @@ namespace Pay.Identity
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "pay.verification"
+                        "pay.customers"
                     }
                 }
             };

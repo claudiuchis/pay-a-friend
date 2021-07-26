@@ -37,6 +37,7 @@ namespace Pay.Verification.Domain
                 GetId(),
                 State.Address.CountryCode
             ));
+            
         }
     }
 

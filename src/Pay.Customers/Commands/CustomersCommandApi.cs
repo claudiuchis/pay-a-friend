@@ -31,11 +31,8 @@ namespace Pay.Verification
 
         [HttpPost]
         [Route("submit")]
-        public Task Submit()
-            => _service.Handle(
-                new SubmitDetailsForVerification { CustomerId = User.Claims.FirstOrDefault (c => c.Type == ClaimTypes.NameIdentifier).Value }, 
-                default
-            );  
+        public Task Submit([FromBody] SubmitDetailsForVerification command)
+            => _service.Handle(command, default);  
 
         [HttpPost]
         [Route("verify")]

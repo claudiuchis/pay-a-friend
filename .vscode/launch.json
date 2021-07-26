@@ -42,13 +42,13 @@
             }
         },
         {
-            "name": "Pay.Verification",
+            "name": "Pay.Customers",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-verification",
-            "program": "${workspaceFolder}/src/Pay.Verification/bin/Debug/net5.0/Pay.Verification.dll",
+            "preLaunchTask": "build-customers",
+            "program": "${workspaceFolder}/src/Pay.Customers/bin/Debug/net5.0/Pay.Customers.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Pay.Verification",
+            "cwd": "${workspaceFolder}/src/Pay.Customers",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -58,7 +58,7 @@
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/src/Pay.Verification/Views"
+                "/Views": "${workspaceFolder}/src/Pay.Customers/Views"
             }
         },
         {
@@ -99,11 +99,12 @@
     ],
     "compounds": [
         {
-            "name": "Pay.Identity, Pay.WebApp and Pay.Verification",
+            "name": "Pay.Identity, Pay.WebApp and Pay.Customers, Pay.Prepaid",
             "configurations": [
                 "Pay.Identity",
                 "Pay.WebApp",
-                "Pay.Verification"
+                "Pay.Customers",
+                "Pay.Prepaid"
             ]
         },
         {
