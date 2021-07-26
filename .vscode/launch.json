@@ -82,7 +82,7 @@
             "name": "Pay.Prepaid",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build-topups",
+            "preLaunchTask": "build-prepaid",
             "program": "${workspaceFolder}/src/Pay.Prepaid/bin/Debug/net5.0/Pay.Prepaid.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Pay.Prepaid",

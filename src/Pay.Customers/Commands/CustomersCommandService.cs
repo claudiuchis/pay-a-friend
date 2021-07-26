@@ -11,7 +11,7 @@ namespace Pay.Verification
             IAggregateStore store
         ) : base(store)
         {
-            OnNew<V1.CreateCustomer>(
+            OnAny<V1.CreateCustomer>(
                 cmd => new CustomerId(cmd.CustomerId),
                 (customer, cmd)
                     => customer.CreateCustomer(

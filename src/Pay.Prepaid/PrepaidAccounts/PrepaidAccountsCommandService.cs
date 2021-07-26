@@ -15,7 +15,7 @@ namespace Pay.Prepaid.PrepaidAccounts
             ICurrencyLookup currencyLookup
         ) : base (store)
         {
-            OnNew<V1.CreatePrepaidAccount>(
+            OnAny<V1.CreatePrepaidAccount>(
                 cmd => new PrepaidAccountId(cmd.PrepaidAccountId),
                 (prepaidAccount, cmd)
                     => prepaidAccount.CreatePrepaidAccount(

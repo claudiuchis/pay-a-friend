@@ -5,9 +5,9 @@ post {{host}}/api/prepaid/transfer
 Content-Type: application/json
 
 {
-    "TransferOrderId": "5a5c5387-8e60-4387-8949-8ff359df4abf",
-    "PayorPrepaidAccountId": "07760b0b-b13d-459a-a675-9768d19a26e4",
-    "PayeePrepaidAccountId": "5a5c5387-8e60-4387-8949-8ff359df4aae",
+    "TransferOrderId": "5a5c5387-8e60-4387-8949-8ff359df4aee",
+    "PayorPrepaidAccountId": "8c7fc97a-ce3c-4a8e-a267-ccdcc5906931",
+    "PayeePrepaidAccountId": "3cd7fa13-f884-41a1-8d5d-adc50852851d",
     "Amount": 20.00,
     "CurrencyCode": "EUR"
 }

@@ -25,7 +25,8 @@ namespace Pay.Prepaid.Projections
                 V1.TransferOrderCreated created
                     => UpdateOperationTask(
                         created.TransferOrderId, 
-                        u => u.Set(d => d.PayorPrepaidAccountId, created.PayorPrepaidAccountId)
+                        u => u.Set(d => d.TransferOrderId, created.TransferOrderId)
+                            .Set(d => d.PayorPrepaidAccountId, created.PayorPrepaidAccountId)
                             .Set(d => d.PayeePrepaidAccountId, created.PayeePrepaidAccountId)
                             .Set(d => d.Amount, created.Amount)
                             .Set(d => d.CurrencyCode, created.CurrencyCode)

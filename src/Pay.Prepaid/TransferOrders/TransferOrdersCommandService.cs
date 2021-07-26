@@ -14,7 +14,7 @@ namespace Pay.Prepaid.TransferOrders
             ICurrencyLookup currencyLookup
         ) : base (store)
         {
-            OnNew<V1.CreateTransferOrder>(
+            OnAny<V1.CreateTransferOrder>(
                 cmd => new TransferOrderId(cmd.TransferOrderId),
                 (order, cmd) => order.CreateTransferOrder(
                     new TransferOrderId(cmd.TransferOrderId),

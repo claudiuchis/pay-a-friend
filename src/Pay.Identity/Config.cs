@@ -29,8 +29,7 @@ namespace Pay.Identity
                     ClientId = "pay.webapp",
                     ClientSecrets = { new Secret("secret".Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.Code,
-                    //AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    AllowedGrantTypes = new [] { GrantType.AuthorizationCode, GrantType.ClientCredentials },
                     
                     // where to redirect to after login
                     RedirectUris = { "https://localhost:6001/signin-oidc" },

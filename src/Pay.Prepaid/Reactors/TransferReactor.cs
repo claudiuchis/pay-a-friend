@@ -73,7 +73,7 @@ namespace Pay.Prepaid.Reactors
                     {
                         await _prepaidAccountsCommandService.Handle(
                             new CreditPrepaidAccount(
-                                transfer.PayorPrepaidAccountId,
+                                transfer.PayeePrepaidAccountId,
                                 transfer.Amount,
                                 transfer.CurrencyCode,
                                 PrepaidTransactionType.TransferBetweenAccounts,

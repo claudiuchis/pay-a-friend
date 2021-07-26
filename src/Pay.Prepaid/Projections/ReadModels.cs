@@ -15,7 +15,7 @@ namespace Pay.Prepaid.Projections
             string PrepaidAccountId,
             string CustomerId,
             string CurrencyCode,
-            decimal Balance,
+            double Balance,
             IEnumerable<Transaction> Transactions
         ) : ProjectedDocument(PrepaidAccountId);
 

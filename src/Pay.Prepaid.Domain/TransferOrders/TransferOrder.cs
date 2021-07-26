@@ -15,6 +15,7 @@ namespace Pay.Prepaid.Domain.TransferOrders
             Funds funds
         )
         {
+            EnsureDoesntExist();
             Apply(new V1.TransferOrderCreated(
                 orderId,
                 payorAccountId,
