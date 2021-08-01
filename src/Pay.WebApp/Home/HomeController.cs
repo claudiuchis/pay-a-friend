@@ -5,23 +5,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using Pay.WebApp.Models;
 
-namespace Pay.WebApp.Controllers
+using Pay.WebApp.Models;
+using Pay.WebApp.Configs;
+
+namespace Pay.WebApp.Home
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly string _signUpUrl;
+        private readonly string _signInUrl;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            IOptions<IdentityProviderConfiguration> identityConfig,
+            ILogger<HomeController> logger
+        )
         {
             _logger = logger;
+            var config = identityConfig.Value;
+            _signUpUrl = $"{config.Authority}{config.SignUp}";
+            _signInUrl = $"{config.Authority}{config.SignIn}";
         }
 
         public IActionResult Index()
         {
-            return View();
+            var vm = new HomeViewModel
+            {
+                SignUpUrl = _signUpUrl,
+                SignInUrl = _signInUrl                   
+            };
+            return View(vm);
         }
 
         public IActionResult Privacy()

@@ -23,14 +23,14 @@ namespace Pay.Prepaid.Projections
         {
             return @event switch {
                 V1.PrepaidAccountCreated created
-                    => new(new CollectionOperation<PrepaidAccount>( (Collection, cancellationToken)
-                        => Collection.InsertOneAsync(new PrepaidAccount(
-                            created.PrepaidAccountId,
-                            created.CustomerId,
-                            created.CurrencyCode,
-                            0.00,
-                            System.Array.Empty<Transaction>()
-                        )))),
+                    => UpdateOperationTask(
+                        created.PrepaidAccountId, 
+                        u => u.Set(d => d.PrepaidAccountId, created.PrepaidAccountId)
+                            .Set(d => d.CustomerId, created.CustomerId)
+                            .Set(d => d.CurrencyCode, created.CurrencyCode)
+                            .Set(d => d.Balance, 0)
+                            .Set(d => d.Transactions, System.Array.Empty<Transaction>())
+                    ),
                 V1.PrepaidAccountCredited credited
                     => UpdateOperationTask(
                         credited.PrepaidAccountId,

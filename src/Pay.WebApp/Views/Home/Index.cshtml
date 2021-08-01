@@ -1,8 +1,17 @@
-﻿@{
+﻿@model Pay.WebApp.Home.HomeViewModel
+
+@{
     ViewData["Title"] = "Home Page";
+    Layout = "_GuestLayout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<section class="jumbotron text-center">
+<div class="container">
+    <h1 class="jumbotron-heading">Payments made easy</h1>
+    <p class="lead text-muted">Pay a friend from any device.</p>
+    <p>
+    <a href="@Model.SignUpUrl" class="btn btn-primary">Get Started</a>
+    </p>
 </div>
+</section>

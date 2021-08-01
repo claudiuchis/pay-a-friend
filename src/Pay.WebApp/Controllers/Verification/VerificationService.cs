@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using System.Net;
 
+using Pay.WebApp.Configs;
+
 namespace Pay.WebApp
 {
     public class VerificationService

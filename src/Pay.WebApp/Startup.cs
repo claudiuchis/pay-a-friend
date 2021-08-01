@@ -8,7 +8,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
+
+using Pay.WebApp.Configs;
 
 namespace Pay.WebApp
 {
@@ -27,13 +30,14 @@ namespace Pay.WebApp
             services.AddControllersWithViews();
             services.AddOptions();
 
-            var identityConfig = Configuration.GetSection("IdentityConfig").Get<IdentityProviderConfiguration>();
+            var identityConfig = Configuration.GetSection("IdentityConfig"); //.Get<IdentityProviderConfiguration>();
             var apiConfig = Configuration.GetSection("ApiConfig");
 
             services
-                .AddCustomAuthentication(identityConfig)
-                .AddCustomServices()
+                .Configure<IdentityProviderConfiguration>(identityConfig)
                 .Configure<ApiConfiguration>(apiConfig)
+                .AddCustomAuthentication()
+                .AddCustomServices()
                 .AddHttpContextAccessor()
             ;
         }
@@ -68,24 +72,14 @@ namespace Pay.WebApp
         }
     }
 
-    public class IdentityProviderConfiguration
-    {
-        public string Authority { get; set; }
-        public string ClientId { get; set; }
-        public string ClientSecret { get; set; }
-    }
-
-    public class ApiConfiguration
-    {
-        public string VerificationAPI { get; set; }
-    }
-
     public static class StartupExtension
     {
         public static IServiceCollection AddCustomAuthentication(
-            this IServiceCollection services,
-            IdentityProviderConfiguration config)
+            this IServiceCollection services)
         {
+
+            var sp = services.BuildServiceProvider();
+            var identityConfig = sp.GetService<IOptions<IdentityProviderConfiguration>>();
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddAuthentication(options =>
@@ -98,10 +92,10 @@ namespace Pay.WebApp
             })
             .AddOpenIdConnect("oidc", options =>
             {
-                options.Authority = config.Authority;
+                options.Authority = identityConfig.Value.Authority;
 
-                options.ClientId = config.ClientId;
-                options.ClientSecret = config.ClientSecret;
+                options.ClientId = identityConfig.Value.ClientId;
+                options.ClientSecret = identityConfig.Value.ClientSecret;
                 options.ResponseType = "code";
                 options.CallbackPath = "/signin-oidc";
                 options.SignedOutCallbackPath = "/signout-callback-oidc";
