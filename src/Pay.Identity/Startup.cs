@@ -22,6 +22,8 @@ using Eventuous.EventStoreDB;
 using Pay.Identity.Registration;
 using Pay.Identity.Authentication;
 using Pay.Identity.Projections;
+using Pay.Identity.Configs;
+using Pay.Identity.Domain.Emails;
 
 namespace Pay.Identity
 {
@@ -40,10 +42,11 @@ namespace Pay.Identity
             services.AddControllersWithViews();
 
             services
+                .Configure<SendgridConfiguration>(Configuration.GetSection(nameof(SendgridConfiguration)))
                 .AddCustomIdentityServer()
                 .AddEventStore(Configuration["EventStore"])
                 .AddMongoStore(Configuration["MongoDB"])
-                .AddServices()
+                .AddCustomServices()
                 .AddProjections();
         }
 
@@ -101,7 +104,7 @@ namespace Pay.Identity
             builder.AddDeveloperSigningCredential();
             return services;
         }
-        public static IServiceCollection AddServices(
+        public static IServiceCollection AddCustomServices(
             this IServiceCollection services
         )
         {
@@ -111,7 +114,8 @@ namespace Pay.Identity
                     {
                         return new RegistrationService(
                             c.GetAggregateStore(),
-                            (plain) => HashPassword(plain)
+                            (plain) => HashPassword(plain),
+                            c.GetRequiredService<ISendEmailService>()
                         );
                     }
                 )
@@ -123,7 +127,8 @@ namespace Pay.Identity
                             (plainPassword, hashedPassword) => Verify(plainPassword, hashedPassword)
                         );
                     }
-                );
+                )
+                .AddSingleton<ISendEmailService>();
             return services;
         }
 

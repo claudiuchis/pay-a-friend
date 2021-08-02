@@ -10,6 +10,11 @@ namespace Pay.Identity.Domain.Users
                 string Email, 
                 string EncryptedPassword, 
                 string FullName);
+
+            public record ConfirmationEmailSent(
+                string Token,
+                string ValidTo
+            );
         }
     }
 }

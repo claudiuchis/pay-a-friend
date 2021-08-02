@@ -30,13 +30,12 @@ namespace Pay.Identity.Registration
         {
             if (ModelState.IsValid)
             {
-                var command = new RegisterUser 
-                {
-                    UserId = Guid.NewGuid().ToString(),
-                    FullName = model.FullName,
-                    Email = model.Email,
-                    Password = model.Password
-                };
+                var command = new RegisterUser( 
+                    Guid.NewGuid().ToString(),
+                    model.FullName,
+                    model.Email,
+                    model.Password
+                );
 
                 await _service.Handle(command, default);
                 return Redirect(model.ReturnUrl);

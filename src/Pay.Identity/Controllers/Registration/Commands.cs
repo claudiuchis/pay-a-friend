@@ -6,13 +6,13 @@ namespace Pay.Identity.Registration
     {
         public static class V1
         {
-            public class RegisterUser
-            {
-                public string UserId { get; set; }
-                public string Email { get; set; }
-                public string Password { get; set; }
-                public string FullName { get; set; }
-            }
+            public record RegisterUser(
+                string UserId,
+                string Email, 
+                string Password,
+                string FullName);
+
+            public record SendConfirmationEmail(string UserId);
         }
     }
 }

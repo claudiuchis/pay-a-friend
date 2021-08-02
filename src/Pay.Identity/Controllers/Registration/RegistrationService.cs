@@ -1,6 +1,7 @@
 using System;
 using Eventuous;
 using Pay.Identity.Domain.Users;
+using Pay.Identity.Domain.Emails;
 using static Pay.Identity.Registration.Commands;
 
 namespace Pay.Identity.Registration
@@ -9,10 +10,11 @@ namespace Pay.Identity.Registration
     {
         public RegistrationService(
             IAggregateStore store,
-            Func<string, string> hashPassword
+            Func<string, string> hashPassword,
+            ISendEmailService emailService
             ) : base(store) 
         {
-            OnNew<V1.RegisterUser>(
+            OnAny<V1.RegisterUser>(
                 cmd => new UserId(cmd.UserId),
                 (user, cmd)
                     => user.Register(
@@ -20,6 +22,14 @@ namespace Pay.Identity.Registration
                         new Email(cmd.Email),
                         HashedPassword.FromString(cmd.Password, hashPassword),
                         new FullName(cmd.FullName)
+                    )
+            );
+
+            OnExisting<V1.SendConfirmationEmail>(
+                cmd => new UserId(cmd.UserId),
+                (user, cmd)
+                    => user.SendConfirmationEmail(
+                        emailService
                     )
             );
         }
