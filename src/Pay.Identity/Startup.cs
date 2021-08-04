@@ -11,19 +11,23 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using IdentityServer4;
 
-using Eventuous;
 using MongoDB.Driver;
 using EventStore.Client;
 using static BCrypt.Net.BCrypt;
+
+using Eventuous;
+using Eventuous.Subscriptions;
 using Eventuous.Subscriptions.EventStoreDB;
 using Eventuous.Projections.MongoDB;
 using Eventuous.EventStoreDB;
 
 using Pay.Identity.Registration;
 using Pay.Identity.Authentication;
+using Pay.Identity.Reactions;
 using Pay.Identity.Projections;
 using Pay.Identity.Configs;
 using Pay.Identity.Domain.Emails;
+using Pay.Identity.Infrastructure;
 
 namespace Pay.Identity
 {
@@ -42,11 +46,13 @@ namespace Pay.Identity
             services.AddControllersWithViews();
 
             services
-                .Configure<SendgridConfiguration>(Configuration.GetSection(nameof(SendgridConfiguration)))
+                .Configure<SendgridConfiguration>(Configuration.GetSection("Sendgrid"))
+                .Configure<ReferenceUrls>(Configuration.GetSection("ReferenceUrls"))
                 .AddCustomIdentityServer()
                 .AddEventStore(Configuration["EventStore"])
                 .AddMongoStore(Configuration["MongoDB"])
                 .AddCustomServices()
+                .AddReactions()
                 .AddProjections();
         }
 
@@ -128,7 +134,35 @@ namespace Pay.Identity
                         );
                     }
                 )
-                .AddSingleton<ISendEmailService>();
+                .AddSingleton<ISendEmailService, SendGridService>();
+            return services;
+        }
+
+        public static IServiceCollection AddReactions(
+            this IServiceCollection services)
+        {
+            services
+                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
+                    var subscriptionId = "identity.reactions";
+                    var loggerFactory = provider.GetLoggerFactory();
+
+                    return new AllStreamSubscription(
+                        provider.GetEventStoreClient(),
+                        subscriptionId,
+                        new MongoCheckpointStore(
+                            provider.GetMongoDatabase(),
+                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        ),
+                        new IEventHandler[] { 
+                            new UserReactions(
+                                subscriptionId, 
+                                provider.GetRequiredService<RegistrationService>()
+                            )
+                        },
+                        DefaultEventSerializer.Instance,
+                        loggerFactory
+                    );
+                });
             return services;
         }
 

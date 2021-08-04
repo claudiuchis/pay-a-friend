@@ -15,6 +15,8 @@ namespace Pay.Identity.Domain.Users
                 string Token,
                 string ValidTo
             );
+
+            public record EmailConfirmed();
         }
     }
 }

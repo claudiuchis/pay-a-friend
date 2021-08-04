@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using static Pay.Identity.Registration.Commands.V1;
+using Pay.Identity.Domain.Emails;
 
 namespace Pay.Identity.Registration
 {
@@ -32,15 +33,29 @@ namespace Pay.Identity.Registration
             {
                 var command = new RegisterUser( 
                     Guid.NewGuid().ToString(),
-                    model.FullName,
                     model.Email,
-                    model.Password
+                    model.Password,
+                    model.FullName
                 );
 
                 await _service.Handle(command, default);
                 return Redirect(model.ReturnUrl);
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmail command)
+        {
+            try 
+            {
+                await _service.Handle(command, default);
+                return View("EmailConfirmationSuccessful");
+            }
+            catch(EmailConfirmationTokenInvalidException)
+            {
+                return View("EmailConfirmationFailed");
+            }
         }
     }
 }

@@ -12,7 +12,13 @@ namespace Pay.Identity.Registration
                 string Password,
                 string FullName);
 
-            public record SendConfirmationEmail(string UserId);
+            public record SendConfirmationEmail(
+                string UserId);
+
+            public record ConfirmEmail(
+                string UserId,
+                string Token
+            );
         }
     }
 }

@@ -14,9 +14,27 @@ namespace Pay.Identity.Domain.Users
 
         public async Task SendConfirmationEmail(ISendEmailService emailService)
         {
-            var token = new EmailConfirmationToken(Guid.NewGuid().ToString(), DateTime.Now.AddDays(1));
-            await emailService.SendEmailConfirmationEmail(State.Email, State.FullName, token.Token.ToString());
+            var token = new EmailConfirmationToken(
+                Guid.NewGuid().ToString(), 
+                DateTime.Now.AddDays(1)
+            );
+            
+            await emailService.SendEmailConfirmationEmail(
+                GetId(),
+                State.Email, 
+                State.FullName, 
+                token.Token.ToString()
+            );
             Apply(new V1.ConfirmationEmailSent(token.Token.ToString(), token.ValidTo.ToString()));
+        }
+
+        public void ConfirmEmail(string token)
+        {
+            if (State.ConfirmationToken != null && State.ConfirmationToken.IsTokenValid(token))
+            {
+                Apply(new V1.EmailConfirmed());
+            }
+            throw new EmailConfirmationTokenInvalidException("The token included in the email confirmation link is invalid");
         }
     }
     public record UserState : AggregateState<UserState, UserId> {
@@ -24,7 +42,8 @@ namespace Pay.Identity.Domain.Users
         public Email Email { get; init; }
         public FullName FullName { get; init; }
         string HashedPassword { get; init; }
-        EmailConfirmationToken ConfirmationToken { get; init; }
+        public EmailConfirmationToken ConfirmationToken { get; init; }
+        public bool EmailConfirmed { get; set; }
 
         public override UserState When(object @event)
             => @event switch {
@@ -32,11 +51,18 @@ namespace Pay.Identity.Domain.Users
                     Id = new UserId(registered.UserId), 
                     Email = new Email(registered.Email), 
                     HashedPassword = registered.EncryptedPassword, 
-                    FullName = new FullName(registered.FullName)},
+                    FullName = new FullName(registered.FullName),
+                    EmailConfirmed = false
+                },
                 
                 V1.ConfirmationEmailSent sent => this with {
                     ConfirmationToken = new EmailConfirmationToken(sent.Token, DateTime.Parse(sent.ValidTo))
                 },
+
+                V1.EmailConfirmed confirmed => this with {
+                    EmailConfirmed = true
+                },
+
                 _ => this
             };
     }

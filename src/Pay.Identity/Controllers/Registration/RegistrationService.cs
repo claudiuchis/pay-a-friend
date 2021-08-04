@@ -32,6 +32,14 @@ namespace Pay.Identity.Registration
                         emailService
                     )
             );
+
+            OnExisting<V1.ConfirmEmail>(
+                cmd => new UserId(cmd.UserId),
+                (user, cmd)
+                    => user.ConfirmEmail(
+                        cmd.Token
+                    )
+            );
         }
     }
 }
