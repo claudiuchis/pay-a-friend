@@ -49,13 +49,15 @@ namespace Pay.Identity.Registration
         {
             try 
             {
-                await _service.Handle(command, default);
-                return View("EmailConfirmationSuccessful");
+                var (state, changes, position) = await _service.Handle(command, default);
+                if (state.EmailConfirmed)
+                    return View("EmailConfirmationSuccessful");
             }
             catch(EmailConfirmationTokenInvalidException)
             {
                 return View("EmailConfirmationFailed");
             }
+            return View("EmailConfirmationFailed");
         }
     }
 }

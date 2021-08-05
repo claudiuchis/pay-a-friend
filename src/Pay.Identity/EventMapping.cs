@@ -9,6 +9,8 @@ namespace Pay.Identity
         public static void MapEventTypes()
         {
             TypeMap.AddType<V1.UserRegistered>("UserRegistered");
+            TypeMap.AddType<V1.ConfirmationEmailSent>("ConfirmationEmailSent");
+            TypeMap.AddType<V1.EmailConfirmed>("EmailConfirmed");
         }
     }
 }

@@ -19,12 +19,13 @@ namespace Pay.Identity.Domain.Users
                 DateTime.Now.AddDays(1)
             );
             
-            await emailService.SendEmailConfirmationEmail(
-                GetId(),
-                State.Email, 
-                State.FullName, 
-                token.Token.ToString()
-            );
+            // await emailService.SendEmailConfirmationEmail(
+            //     GetId(),
+            //     State.Email, 
+            //     State.FullName, 
+            //     token.Token.ToString()
+            // );
+
             Apply(new V1.ConfirmationEmailSent(token.Token.ToString(), token.ValidTo.ToString()));
         }
 
