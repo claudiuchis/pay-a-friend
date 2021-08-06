@@ -65,7 +65,11 @@ namespace Pay.Identity.Test
         public async Task SendEmailSuccessfully()
         {
             var sendGridConfig = new SendgridConfiguration() {
+<<<<<<< HEAD
                 ApiKey = "dummy",
+=======
+                ApiKey = "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",
+>>>>>>> 9ba3e50ef43b4f84350dbfa0676aa5c844f7c125
                 SenderEmail = "from@me.com",
                 SenderName = "me"
             };
