@@ -19,14 +19,24 @@ namespace Pay.Identity.Domain.Users
                 DateTime.Now.AddDays(1)
             );
             
-            // await emailService.SendEmailConfirmationEmail(
-            //     GetId(),
-            //     State.Email, 
-            //     State.FullName, 
-            //     token.Token.ToString()
-            // );
+            var result = await emailService.SendEmailConfirmationEmail(
+                GetId(),
+                State.Email, 
+                State.FullName, 
+                token.Token.ToString()
+            );
 
-            Apply(new V1.ConfirmationEmailSent(token.Token.ToString(), token.ValidTo.ToString()));
+            if (result.IsSuccess)
+                Apply(new V1.ConfirmationEmailSent(token.Token.ToString(), token.ValidTo.ToString()));
+
+            if (result.IsFailed)
+            {
+                if (result.HasError<UnauthorizedError>())
+                {
+                    // we have a bigger issue here, so throw
+                    throw new Exception("Can't send emails due to invalid access to the email system");
+                }
+            }
         }
 
         public void ConfirmEmail(string token)

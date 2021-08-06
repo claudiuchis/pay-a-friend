@@ -49,7 +49,7 @@ namespace Pay.Identity.Registration
         {
             try 
             {
-                var (state, changes, position) = await _service.Handle(command, default);
+                var (state, _) = await _service.Handle(command, default);
                 if (state.EmailConfirmed)
                     return View("EmailConfirmationSuccessful");
             }

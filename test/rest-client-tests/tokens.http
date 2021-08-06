@@ -1,0 +1,9 @@
+@host = https://localhost:5001
+
+###
+post {{host}}/connect/token
+Content-Type: application/x-www-form-urlencoded
+    
+client_id=pay.webapp&client_secret=secret&grant_type=client_credentials&scope=pay.customers
+
+

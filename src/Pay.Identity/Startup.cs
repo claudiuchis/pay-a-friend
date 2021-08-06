@@ -148,7 +148,10 @@ namespace Pay.Identity
 
                     return new AllStreamSubscription(
                         provider.GetEventStoreClient(),
-                        subscriptionId,
+                        new AllStreamSubscriptionOptions() {
+                            SubscriptionId = subscriptionId,
+                            ThrowOnError = true
+                        },
                         new MongoCheckpointStore(
                             provider.GetMongoDatabase(),
                             loggerFactory.CreateLogger<MongoCheckpointStore>()
