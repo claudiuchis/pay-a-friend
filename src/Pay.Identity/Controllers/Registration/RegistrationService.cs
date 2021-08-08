@@ -25,10 +25,10 @@ namespace Pay.Identity.Registration
                     )
             );
 
-            OnExisting<V1.SendConfirmationEmail>(
+            OnExistingAsync<V1.SendConfirmationEmail>(
                 cmd => new UserId(cmd.UserId),
-                (user, cmd)
-                    => user.SendConfirmationEmail(
+                async (user, cmd, cancellationToken)
+                    => await user.SendConfirmationEmail(
                         emailService
                     )
             );
