@@ -18,7 +18,7 @@ I'm using this as a playground to learn about:
 
 # Business process
 Event Storming is being used to define the domain model for online payments using a prepaid account. 
-The output has been captured in the [Business Process Modeling with Event Storming](BusinessProcessModellingUsingEventStorming.pdf) document.
+The output has been captured in the [Business Process Modeling with Event Storming](DomainModel.pdf) document.
 
 This model captures:
 - the ubiquitous language for this domain model (in the form of events)
