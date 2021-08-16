@@ -19,15 +19,15 @@ namespace Pay.WebApp
 {
     public class VerificationService
     {
-        private HttpClient _httpClient;
-
+        readonly IHttpClientFactory _httpClientFactory;
+        private readonly IOptions<ApiConfiguration> _apiConfig;
 
         public VerificationService(
             IOptions<ApiConfiguration> apiConfig,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(apiConfig.Value.VerificationAPI);
+            _httpClientFactory = httpClientFactory;
+            _apiConfig = apiConfig;
         }
 
         public async Task SendVerificationDetails(VerificationModel model)
@@ -35,7 +35,10 @@ namespace Pay.WebApp
             var context = new HttpContextAccessor().HttpContext;
             var accessToken = await context.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
             var customerId = context.User.Claims.Where( claim => claim.Type == "sub").FirstOrDefault().Value;
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+
+            var httpClient = _httpClientFactory.CreateClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             // create the draft
 
@@ -51,7 +54,7 @@ namespace Pay.WebApp
                 "application/json"
             );
 
-            var response = await _httpClient.PostAsync("/api/verify/draft", draftCommandJson);
+            var response = await httpClient.PostAsync("/api/verify/draft", draftCommandJson);
 
             if (response.StatusCode != HttpStatusCode.OK) throw new Exception($"{response.StatusCode} {response.ReasonPhrase}");
 
@@ -66,7 +69,7 @@ namespace Pay.WebApp
                 Encoding.UTF8,
                 "application/json"
             );
-            response = await _httpClient.PostAsync("/api/verify/dob", dobCommandJson);
+            response = await httpClient.PostAsync("/api/verify/dob", dobCommandJson);
             if (response.StatusCode != HttpStatusCode.OK) throw new Exception($"{response.StatusCode} {response.ReasonPhrase}");
 
             // add the address
@@ -85,7 +88,7 @@ namespace Pay.WebApp
                 Encoding.UTF8,
                 "application/json"
             );
-            response = await _httpClient.PostAsync("/api/verify/address", addressCommandJson);
+            response = await httpClient.PostAsync("/api/verify/address", addressCommandJson);
             if (response.StatusCode != HttpStatusCode.OK) throw new Exception($"{response.StatusCode} {response.ReasonPhrase}");
 
             // submit the details
@@ -98,7 +101,7 @@ namespace Pay.WebApp
                 Encoding.UTF8,
                 "application/json"
             );
-            response = await _httpClient.PostAsync("/api/verify/submit", submitCommandJson);
+            response = await httpClient.PostAsync("/api/verify/submit", submitCommandJson);
             if (response.StatusCode != HttpStatusCode.OK) throw new Exception($"{response.StatusCode} {response.ReasonPhrase}");
 
         }

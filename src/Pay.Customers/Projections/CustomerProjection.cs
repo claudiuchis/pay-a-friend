@@ -8,7 +8,7 @@ using static Pay.Verification.Domain.Events;
 
 namespace Pay.Verification.Projections
 {
-    public class CustomerProjection : MongoProjection<Customer>
+    public class CustomerProjection : MongoProjection<CustomerDetails>
     {
         public CustomerProjection(IMongoDatabase database, string subscriptionGroup, ILoggerFactory loggerFactory)
             : base(database, subscriptionGroup, loggerFactory) {}
@@ -17,8 +17,10 @@ namespace Pay.Verification.Projections
         {
             return @event switch{
                 V1.CustomerCreated e 
-                    => new(new CollectionOperation<Customer>( (collection, cancellationToken) 
-                        => collection.InsertOneAsync(new Customer(e.CustomerId, VerificationStatus.DetailsNotVerified), null, cancellationToken))),
+                    => UpdateOperationTask(e.CustomerId, update 
+                        => update.Set(d => d.CustomerId, e.CustomerId)
+                            .Set(d => DetailsSubmitted, false)
+                            .Set(d => DetailsVerified, false),
                 V1.AddressAdded e 
                     => UpdateOperationTask(e.CustomerId, update 
                         => update.Set(d => d.Address, $"{e.Address1} {e.Address2}, {e.CityTown}, {e.CountyState}, {e.Code}, {e.Country}")),
@@ -27,10 +29,10 @@ namespace Pay.Verification.Projections
                         => update.Set(d => d.DateOfBirth, e.DateOfBirth)),
                 V1.CustomerDetailsSentForVerification e
                     => UpdateOperationTask(e.CustomerId, update
-                        => update.Set(d => d.VerificationStatus, VerificationStatus.DetailsSentForVerification)),
+                        => update.Set(d => d.DetailsSubmitted, true)),
                 V1.CustomerDetailsVerified e
                     => UpdateOperationTask(e.CustomerId, update
-                        => update.Set(d => d.VerificationStatus, VerificationStatus.DetailsVerified)),
+                        => update.Set(d => d.DetailsVerified, true)),
                 _ => NoOp
             };
         }

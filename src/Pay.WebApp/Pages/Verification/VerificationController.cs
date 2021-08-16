@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace Pay.WebApp
 {
-    [Authorize]
     public class VerificationController : Controller
     {
         VerificationService _service; 
@@ -29,6 +28,12 @@ namespace Pay.WebApp
                 return Redirect("/Home");
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Pending()
+        {
+            return View();
         }
     }
 }

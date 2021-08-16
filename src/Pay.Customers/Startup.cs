@@ -99,7 +99,9 @@ namespace Pay.Verification
         )
         {
             services
-                .AddSingleton<CustomersCommandService>();
+                .AddSingleton<CustomersCommandService>()
+                .AddSingleton<CustomersQueryApi>()
+            ;
 
             return services;
         }

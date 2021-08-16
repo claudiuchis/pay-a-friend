@@ -1,6 +1,6 @@
 using System;
 
-namespace Pay.WebApp.Home
+namespace Pay.WebApp.Pages.Home
 {
     public class HomeViewModel
     {

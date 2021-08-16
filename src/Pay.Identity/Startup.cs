@@ -53,7 +53,8 @@ namespace Pay.Identity
                 .AddMongoStore(Configuration["MongoDB"])
                 .AddCustomServices()
                 .AddReactions()
-                .AddProjections();
+                .AddProjections()
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -173,7 +174,7 @@ namespace Pay.Identity
             this IServiceCollection services)
         {
             services
-                .AddHostedService<AllStreamSubscription>( provider => {
+                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
                     var subscriptionId = "users.projections";
                     var loggerFactory = provider.GetLoggerFactory();
 

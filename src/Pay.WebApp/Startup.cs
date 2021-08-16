@@ -30,12 +30,10 @@ namespace Pay.WebApp
             services.AddControllersWithViews();
             services.AddOptions();
 
-            var identityConfig = Configuration.GetSection("IdentityConfig"); //.Get<IdentityProviderConfiguration>();
-            var apiConfig = Configuration.GetSection("ApiConfig");
-
             services
-                .Configure<IdentityProviderConfiguration>(identityConfig)
-                .Configure<ApiConfiguration>(apiConfig)
+                .Configure<IdentityProviderConfiguration>(Configuration.GetSection("IdentityConfig"))
+                .Configure<ApiConfiguration>(Configuration.GetSection("ApiConfig"))
+                .Configure<LocalUrls>(Configuration.GetSection("LocalUrls"))
                 .AddCustomAuthentication()
                 .AddCustomServices()
                 .AddHttpContextAccessor()
@@ -67,7 +65,9 @@ namespace Pay.WebApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}")
+                .RequireAuthorization()
+                ;
             });
         }
     }

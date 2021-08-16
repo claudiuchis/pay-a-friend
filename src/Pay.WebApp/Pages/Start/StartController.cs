@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
@@ -11,33 +13,44 @@ using Microsoft.Extensions.Logging;
 using Pay.WebApp.Models;
 using Pay.WebApp.Configs;
 
-namespace Pay.WebApp.Home
+namespace Pay.WebApp.Pages.Start
 {
-    public class HomeController : Controller
+    [AllowAnonymous]
+    public class StartController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<StartController> _logger;
         private readonly string _signUpUrl;
         private readonly string _signInUrl;
+        private readonly string _returnUrl;
 
-        public HomeController(
+        public StartController(
             IOptions<IdentityProviderConfiguration> identityConfig,
-            ILogger<HomeController> logger
+            IOptions<LocalUrls> localUrls,
+            ILogger<StartController> logger
         )
         {
             _logger = logger;
             var config = identityConfig.Value;
             _signUpUrl = $"{config.Authority}{config.SignUp}";
             _signInUrl = $"{config.Authority}{config.SignIn}";
+            _returnUrl = localUrls.Value.ReturnUrl;
         }
 
         public IActionResult Index()
         {
-            var vm = new HomeViewModel
+            if (User.Identity.IsAuthenticated)
             {
-                SignUpUrl = _signUpUrl,
-                SignInUrl = _signInUrl                   
-            };
-            return View(vm);
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                var encodedReturnUrl = HttpUtility.UrlEncode(_returnUrl);
+                var vm = new StartViewModel
+                {
+                    SignUpUrl = $"{_signUpUrl}?ReturnUrl={encodedReturnUrl}",
+                };
+                return View(vm);
+            }
         }
 
         public IActionResult Privacy()
