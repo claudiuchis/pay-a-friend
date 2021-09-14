@@ -8,16 +8,17 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
     <PackageReference Include="EventStore.Client" Version="21.2.0" />
-    <PackageReference Include="Eventuous" Version="0.4.5" />
-    <PackageReference Include="Eventuous.EventStoreDB" Version="0.4.5" />
-    <PackageReference Include="Eventuous.Projections.MongoDB" Version="0.4.5" />
-    <PackageReference Include="Eventuous.Subscriptions.EventStoreDB" Version="0.4.5" />
+    <PackageReference Include="Eventuous" Version="0.4.7" />
+    <PackageReference Include="Eventuous.EventStoreDB" Version="0.4.7" />
+    <PackageReference Include="Eventuous.Projections.MongoDB" Version="0.4.7" />
+    <PackageReference Include="Eventuous.Subscriptions.EventStoreDB" Version="0.4.7" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="SendGrid" Version="9.24.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Pay.Identity.Domain\Pay.Identity.Domain.csproj" />
+    <ProjectReference Include="..\Pay.Common\Pay.Common.csproj" />
   </ItemGroup>
 
 </Project>

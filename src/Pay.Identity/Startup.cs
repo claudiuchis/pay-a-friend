@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4;
 
 using MongoDB.Driver;
-using EventStore.Client;
+//using EventStore.Client;
 using static BCrypt.Net.BCrypt;
 
 using Eventuous;
@@ -28,6 +28,7 @@ using Pay.Identity.Projections;
 using Pay.Identity.Configs;
 using Pay.Identity.Domain.Emails;
 using Pay.Identity.Infrastructure;
+using Pay.Common;
 
 namespace Pay.Identity
 {
@@ -143,19 +144,20 @@ namespace Pay.Identity
             this IServiceCollection services)
         {
             services
-                .AddSingleton<IHostedService, AllStreamSubscription>( provider => {
-                    var subscriptionId = "identity.reactions";
+                .AddSingleton<IHostedService, StreamSubscription>( provider => {
+                    var subscriptionId = "user.registrations";
                     var loggerFactory = provider.GetLoggerFactory();
 
-                    return new AllStreamSubscription(
+                    return new StreamSubscription(
                         provider.GetEventStoreClient(),
-                        new AllStreamSubscriptionOptions() {
+                        new StreamSubscriptionOptions() {
+                            StreamName = StreamNames.UserRegistrationsStream,
                             SubscriptionId = subscriptionId,
                             ThrowOnError = true
                         },
-                        new MongoCheckpointStore(
-                            provider.GetMongoDatabase(),
-                            loggerFactory.CreateLogger<MongoCheckpointStore>()
+                        new EsCheckpointStore(
+                            provider.GetEventStoreClient(),
+                            loggerFactory.CreateLogger<EsCheckpointStore>()
                         ),
                         new IEventHandler[] { 
                             new UserReactions(
@@ -202,8 +204,8 @@ namespace Pay.Identity
         {
             EventMapping.MapEventTypes();
             
-            var settings = EventStoreClientSettings.Create(eventStoreConnectionString);
-            var eventStoreClient = new EventStoreClient(settings);
+            var settings = EventStore.Client.EventStoreClientSettings.Create(eventStoreConnectionString);
+            var eventStoreClient = new EventStore.Client.EventStoreClient(settings);
             var eventStore = new EsdbEventStore(eventStoreClient);
             services.AddSingleton(eventStoreClient);
             var aggregateStore = new AggregateStore(eventStore, DefaultEventSerializer.Instance);
@@ -228,8 +230,8 @@ namespace Pay.Identity
             => provider.GetRequiredService<IAggregateStore>();
         public static IMongoDatabase GetMongoDatabase(this IServiceProvider provider)
             => provider.GetRequiredService<IMongoDatabase>();
-        public static EventStoreClient GetEventStoreClient(this IServiceProvider provider)
-            => provider.GetRequiredService<EventStoreClient>();
+        public static EventStore.Client.EventStoreClient GetEventStoreClient(this IServiceProvider provider)
+            => provider.GetRequiredService<EventStore.Client.EventStoreClient>();
 
     }
 }

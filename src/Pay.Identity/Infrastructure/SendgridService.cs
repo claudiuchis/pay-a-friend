@@ -54,6 +54,8 @@ namespace Pay.Identity.Infrastructure
             if (result.IsFailed)
                 return result;
 
+            return Result.Ok();
+            /*
             var client = new SendGridClient(_sendgridConfig.ApiKey);
             var from = new EmailAddress(_sendgridConfig.SenderEmail, _sendgridConfig.SenderName);
             var subject = "Email Confirmation";
@@ -76,7 +78,7 @@ namespace Pay.Identity.Infrastructure
                 }
                 return Result.Fail(new UnknownError());
             }
-            
+            */
         }
     }
 }
