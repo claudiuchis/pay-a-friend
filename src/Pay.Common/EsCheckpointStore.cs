@@ -44,6 +44,8 @@ namespace Pay.Common
             }
             catch (StreamNotFoundException) {
                 checkpoint = new Checkpoint(checkpointId, null);
+                await StoreCheckpoint(checkpoint);
+                await SetStreamMaxCount(stream);
             }
 
             return checkpoint;
@@ -71,8 +73,8 @@ namespace Pay.Common
 
             await resultTask.ConfigureAwait(false);
 
-            if (checkpoint.Position == null)
-                await SetStreamMaxCount(stream);
+            // if (checkpoint.Position == null)
+            //     await SetStreamMaxCount(stream);
 
             return checkpoint;
         }
