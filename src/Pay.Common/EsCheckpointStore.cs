@@ -30,18 +30,23 @@ namespace Pay.Common
             CancellationToken cancellationToken = default
         )
         {
+            Checkpoint checkpoint;
             var stream = CheckpointStreamPrefix + checkpointId;
-            var read = _connection
-                .ReadStreamAsync(Direction.Backwards, stream, StreamPosition.End, 1);
+            try 
+            {
+                var read = _connection
+                    .ReadStreamAsync(Direction.Backwards, stream, StreamPosition.End, 1);
+                var resolvedEvents = await read.ToArrayAsync(cancellationToken);
+                ResolvedEvent eventData = resolvedEvents.FirstOrDefault();
 
-            var resolvedEvents = await read.ToArrayAsync(cancellationToken);
+                var jsonData = Encoding.UTF8.GetString(eventData.Event.Data.ToArray());
+                checkpoint = (Checkpoint) JsonConvert.DeserializeObject(jsonData, CheckpointEventType);
+            }
+            catch (StreamNotFoundException) {
+                checkpoint = new Checkpoint(checkpointId, null);
+            }
 
-            ResolvedEvent eventData = resolvedEvents.FirstOrDefault();
-
-            var jsonData = Encoding.UTF8.GetString(eventData.Event.Data.ToArray());
-            var data = (Checkpoint) JsonConvert.DeserializeObject(jsonData, CheckpointEventType);
-
-            return data;
+            return checkpoint;
         }
 
         public async ValueTask<Checkpoint> StoreCheckpoint(

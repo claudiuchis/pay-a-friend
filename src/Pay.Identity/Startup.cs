@@ -51,10 +51,10 @@ namespace Pay.Identity
                 .Configure<ReferenceUrls>(Configuration.GetSection("ReferenceUrls"))
                 .AddCustomIdentityServer()
                 .AddEventStore(Configuration["EventStore"])
-                .AddMongoStore(Configuration["MongoDB"])
+                //.AddMongoStore(Configuration["MongoDB"])
                 .AddCustomServices()
                 .AddReactions()
-                .AddProjections()
+                //.AddProjections()
             ;
         }
 
@@ -153,7 +153,8 @@ namespace Pay.Identity
                         new StreamSubscriptionOptions() {
                             StreamName = StreamNames.UserRegistrationsStream,
                             SubscriptionId = subscriptionId,
-                            ThrowOnError = true
+                            ThrowOnError = true,
+                            ResolveLinkTos = true
                         },
                         new EsCheckpointStore(
                             provider.GetEventStoreClient(),
