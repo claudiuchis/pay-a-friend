@@ -40,7 +40,7 @@ namespace Pay.Common
                 ResolvedEvent eventData = resolvedEvents.FirstOrDefault();
 
                 var jsonData = Encoding.UTF8.GetString(eventData.Event.Data.ToArray());
-                checkpoint = (Checkpoint) JsonConvert.DeserializeObject(jsonData, CheckpointEventType);
+                checkpoint = JsonConvert.DeserializeObject<Checkpoint>(jsonData);
             }
             catch (StreamNotFoundException) {
                 checkpoint = new Checkpoint(checkpointId, null);
