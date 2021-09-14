@@ -13,7 +13,6 @@ namespace Pay.Common
     public class EsCheckpointStore : ICheckpointStore
     {
         const string CheckpointStreamPrefix = "checkpoint:";
-        Type CheckpointEventType = Type.GetType("Checkpoint");
         readonly EventStoreClient _connection;
         readonly ILogger<EsCheckpointStore> _log;
 
@@ -58,7 +57,7 @@ namespace Pay.Common
             var stream = CheckpointStreamPrefix + checkpoint.Id;
             var eventData = new EventData(
                 Uuid.NewUuid(),
-                "Checkpoint",
+                checkpoint.GetType().Name,
                 Encoding.UTF8.GetBytes(
                     JsonConvert.SerializeObject(checkpoint)),
                 null
@@ -72,10 +71,6 @@ namespace Pay.Common
                 cancellationToken: cancellationToken);
 
             await resultTask.ConfigureAwait(false);
-
-            // if (checkpoint.Position == null)
-            //     await SetStreamMaxCount(stream);
-
             return checkpoint;
         }
 
