@@ -12,6 +12,7 @@ namespace Pay.Identity.Queries
             _client = client;
         }
 
+        // https://www.eventstore.com/blog/projections-5-indexing
         public async Task<UserDetails> GetUser(string UserId)
         {
             return await GetStateAsync<UserDetails>(
