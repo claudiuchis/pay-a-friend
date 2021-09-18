@@ -2,22 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Bson;
-using Eventuous.Projections.MongoDB.Tools;
 using static Pay.Identity.Projections.ReadModels;
 
 namespace Pay.Identity.Authentication
 {
     public class AuthenticationService
     {
-        IMongoDatabase _database;
+        UserQueryService _queryService;
         Func<string, string, bool> _verifyPassword;        
         public AuthenticationService(
-            IMongoDatabase database, 
+            UserQueryService queryService, 
             Func<string, string, bool> verifyPassword)
         {
-            _database = database;
+            _queryService = queryService;
             _verifyPassword = verifyPassword;
         }
 

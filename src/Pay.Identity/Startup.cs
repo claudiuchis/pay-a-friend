@@ -136,7 +136,9 @@ namespace Pay.Identity
                         );
                     }
                 )
-                .AddSingleton<ISendEmailService, SendGridService>();
+                .AddSingleton<ISendEmailService, SendGridService>()
+                .AddSingleton(UserQueryService)
+            ;
             return services;
         }
 
@@ -222,6 +224,7 @@ namespace Pay.Identity
             ProjectionMapping.MapProjections();
             var settings = EventStore.Client.EventStoreClientSettings.Create(eventStoreConnectionString);
             var eventStoreProjectionClient = new EventStore.Client.EventStoreProjectionManagementClient(settings);
+            services.AddSingleton(eventStoreProjectionClient);
             EsProjectionMap.UpsertProjections(eventStoreProjectionClient);
             return services;
         }
@@ -246,6 +249,5 @@ namespace Pay.Identity
             => provider.GetRequiredService<IMongoDatabase>();
         public static EventStore.Client.EventStoreClient GetEventStoreClient(this IServiceProvider provider)
             => provider.GetRequiredService<EventStore.Client.EventStoreClient>();
-
     }
 }

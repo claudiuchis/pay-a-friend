@@ -1,15 +1,17 @@
 using Pay.Common;
 
-namespace Pay.Identity
+namespace Pay.Identity.Infrastructure
 {
     public static class ProjectionMapping
     {
+        public static const string UserDetailsProjection = "user-details";
+        public static const string UserRegistrationsProjection = "user-registrations";
         public static void MapProjections()
         {
             EsProjectionMap.AddProjection(new Projection(
-                "user-details", 
-                0,
-                @"
+                Name: UserDetailsProjection, 
+                Version: 0,
+                Query: @"
                     fromCategory('User')
                     .foreachStream()
                     .when({
@@ -24,9 +26,9 @@ namespace Pay.Identity
             );
 
             EsProjectionMap.AddProjection(new Projection(
-                "user-registrations",
-                0,
-                @"
+                Name: UserRegistrationsProjection,
+                Version: 0,
+                Query: @"
                     fromAll().when( {
                         'UserRegistered' : function(s,e) {linkTo(""user-registrations"", e)},
                         })            
