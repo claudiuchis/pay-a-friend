@@ -153,7 +153,8 @@ namespace Pay.Identity
                         new StreamSubscriptionOptions() {
                             StreamName = StreamNames.UserRegistrationsStream,
                             SubscriptionId = subscriptionId,
-                            ThrowOnError = true
+                            ThrowOnError = true,
+                            ResolveLinkTos = true
                         },
                         new EsCheckpointStore(
                             provider.GetEventStoreClient(),

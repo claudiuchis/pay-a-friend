@@ -13,7 +13,6 @@ namespace Pay.Common
     public class EsCheckpointStore : ICheckpointStore
     {
         const string CheckpointStreamPrefix = "checkpoint:";
-        Type CheckpointEventType = Type.GetType("Checkpoint");
         readonly EventStoreClient _connection;
         readonly ILogger<EsCheckpointStore> _log;
 
@@ -30,18 +29,25 @@ namespace Pay.Common
             CancellationToken cancellationToken = default
         )
         {
+            Checkpoint checkpoint;
             var stream = CheckpointStreamPrefix + checkpointId;
-            var read = _connection
-                .ReadStreamAsync(Direction.Backwards, stream, StreamPosition.End, 1);
+            try 
+            {
+                var read = _connection
+                    .ReadStreamAsync(Direction.Backwards, stream, StreamPosition.End, 1);
+                var resolvedEvents = await read.ToArrayAsync(cancellationToken);
+                ResolvedEvent eventData = resolvedEvents.FirstOrDefault();
 
-            var resolvedEvents = await read.ToArrayAsync(cancellationToken);
+                var jsonData = Encoding.UTF8.GetString(eventData.Event.Data.ToArray());
+                checkpoint = JsonConvert.DeserializeObject<Checkpoint>(jsonData);
+            }
+            catch (StreamNotFoundException) {
+                checkpoint = new Checkpoint(checkpointId, null);
+                await StoreCheckpoint(checkpoint);
+                await SetStreamMaxCount(stream);
+            }
 
-            ResolvedEvent eventData = resolvedEvents.FirstOrDefault();
-
-            var jsonData = Encoding.UTF8.GetString(eventData.Event.Data.ToArray());
-            var data = (Checkpoint) JsonConvert.DeserializeObject(jsonData, CheckpointEventType);
-
-            return data;
+            return checkpoint;
         }
 
         public async ValueTask<Checkpoint> StoreCheckpoint(
@@ -51,7 +57,7 @@ namespace Pay.Common
             var stream = CheckpointStreamPrefix + checkpoint.Id;
             var eventData = new EventData(
                 Uuid.NewUuid(),
-                "Checkpoint",
+                checkpoint.GetType().Name,
                 Encoding.UTF8.GetBytes(
                     JsonConvert.SerializeObject(checkpoint)),
                 null
@@ -65,10 +71,6 @@ namespace Pay.Common
                 cancellationToken: cancellationToken);
 
             await resultTask.ConfigureAwait(false);
-
-            if (checkpoint.Position == null)
-                await SetStreamMaxCount(stream);
-
             return checkpoint;
         }
 
