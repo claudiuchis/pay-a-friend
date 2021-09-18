@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="EventStore.Client" Version="21.2.0" />
+    <PackageReference Include="EventStore.Client.Grpc.ProjectionManagement" Version="21.2.0" />
     <PackageReference Include="Eventuous.EventStoreDB" Version="0.4.7" />
     <PackageReference Include="Eventuous.Subscriptions" Version="0.4.7" />
   </ItemGroup>

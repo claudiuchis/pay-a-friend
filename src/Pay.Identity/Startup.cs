@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using IdentityServer4;
 
 using MongoDB.Driver;
-//using EventStore.Client;
 using static BCrypt.Net.BCrypt;
 
 using Eventuous;
@@ -55,6 +54,7 @@ namespace Pay.Identity
                 .AddCustomServices()
                 .AddReactions()
                 .AddProjections()
+                .AddEventStoreProjections(Configuration["EventStore"])
             ;
         }
 
@@ -212,6 +212,19 @@ namespace Pay.Identity
             services.AddSingleton<IAggregateStore>(aggregateStore);
             return services;
         }
+
+        public static IServiceCollection AddEventStoreProjections(
+            this IServiceCollection services,
+            string eventStoreConnectionString
+        )
+        {
+            ProjectionMapping.MapProjections();
+            var settings = EventStore.Client.EventStoreClientSettings.Create(eventStoreConnectionString);
+            var eventStoreProjectionClient = new EventStore.Client.EventStoreProjectionManagementClient(settings);
+            EsProjectionMap.UpsertProjections(eventStoreProjectionClient);
+            return services;
+        }
+
 
         public static IServiceCollection AddMongoStore(
             this IServiceCollection services,
