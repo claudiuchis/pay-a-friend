@@ -13,6 +13,7 @@ namespace Pay.Identity.Queries
         }
 
         // https://www.eventstore.com/blog/projections-5-indexing
+        // https://developers.eventstore.com/clients/dotnet/5.0/projections/#the-number-of-items-per-shopping-cart
         public async Task<UserDetails> GetUser(string UserId)
         {
             return await GetStateAsync<UserDetails>(
