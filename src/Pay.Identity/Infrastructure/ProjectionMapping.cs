@@ -4,13 +4,13 @@ namespace Pay.Identity.Infrastructure
 {
     public static class ProjectionMapping
     {
-        public const string UserDetailsProjection = "user-details";
-        public const string UserRegistrationsProjection = "user-registrations";
+        public const string UserAuthenticationProjection = "user-authentication-projection";
+        public const string UserRegistrationsProjection = "user-registrations-projection";
         public static void MapProjections()
         {
             EsProjectionMap.AddProjection(new Projection(
-                Name: UserDetailsProjection, 
-                Version: 0,
+                Name: UserAuthenticationProjection, 
+                Version: 1,
                 Query: @"
                     fromCategory('User')
                         .partitionBy(function(event) {
@@ -21,6 +21,7 @@ namespace Pay.Identity.Infrastructure
                                 state.UserId = event.data.userId;
                                 state.Email = event.data.email;
                                 state.FullName = event.data.fullName;
+                                state.HashedPassword = event.data.encryptedPassword
                             }
                         })
                         .outputState();

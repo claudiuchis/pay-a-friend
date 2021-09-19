@@ -19,7 +19,7 @@ namespace Pay.Identity.Queries
         public async Task<UserDetails> GetUserByEmail(string email)
         {
             return await _client.GetStateAsync<UserDetails>(
-                name: ProjectionMapping.UserDetailsProjection,
+                name: ProjectionMapping.UserAuthenticationProjection,
                 partition: email);
         }
     }

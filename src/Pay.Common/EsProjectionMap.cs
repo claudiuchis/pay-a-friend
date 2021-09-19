@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EventStore.Client;
+using System.Linq;
 
 namespace Pay.Common
 {
@@ -13,9 +14,10 @@ namespace Pay.Common
         public static void AddProjection(Projection projection)
             => Projections.Add(projection);
 
-        public static void UpsertProjections(EventStoreProjectionManagementClient client)
+        public static async Task UpsertProjections(EventStoreProjectionManagementClient client)
         {
-            Projections.ForEach(async projection => {
+            foreach (var projection in Projections)
+            {
                 try {
                     var details = await client.GetStatusAsync(projection.Name);
                     if (details.Version < projection.Version)
@@ -25,9 +27,9 @@ namespace Pay.Common
                 }
                 catch(InvalidOperationException)
                 {
-                    await client.CreateContinuousAsync(projection.Name, projection.Query);
+                    await client.CreateContinuousAsync(projection.Name, projection.Query, true);
                 }
-            });
+            }
         }
     }
 }
