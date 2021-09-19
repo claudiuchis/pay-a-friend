@@ -4,8 +4,8 @@ namespace Pay.Identity.Infrastructure
 {
     public static class ProjectionMapping
     {
-        public static const string UserDetailsProjection = "user-details";
-        public static const string UserRegistrationsProjection = "user-registrations";
+        public const string UserDetailsProjection = "user-details";
+        public const string UserRegistrationsProjection = "user-registrations";
         public static void MapProjections()
         {
             EsProjectionMap.AddProjection(new Projection(
@@ -13,15 +13,17 @@ namespace Pay.Identity.Infrastructure
                 Version: 0,
                 Query: @"
                     fromCategory('User')
-                    .foreachStream()
-                    .when({
-                    UserRegistered: function(state, event) {
-                        state.UserId = event.userId;
-                        state.Email = event.email;
-                        state.FullName = event.fullName;
-                    }
-                    })
-                    .outputState();
+                        .partitionBy(function(event) {
+                            return event.data.email
+                        })
+                        .when({
+                            UserRegistered: function(state, event) {
+                                state.UserId = event.data.userId;
+                                state.Email = event.data.email;
+                                state.FullName = event.data.fullName;
+                            }
+                        })
+                        .outputState();
                 ")
             );
 

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Pay.Identity.Projections.ReadModels;
+using Pay.Identity.Queries;
+using static Pay.Identity.Queries.ReadModels;
 
 namespace Pay.Identity.Authentication
 {
@@ -18,15 +19,12 @@ namespace Pay.Identity.Authentication
             _verifyPassword = verifyPassword;
         }
 
-        public bool CheckCredentials(
+        public async Task<(bool result, UserDetails details)> CheckCredentials(
             string email,
-            string password,
-            out UserDetails userDetails
+            string password
         )
         {
-            var builder = Builders<UserDetails>.Filter;
-            var filter = builder.Eq(user => user.Email, email);
-            userDetails = _database.GetDocumentCollection<UserDetails>().Find(filter).FirstOrDefault();
+            var userDetails = await _queryService.GetUserByEmail(email);
 
             if (userDetails != null && _verifyPassword(password, userDetails.HashedPassword))
             {
@@ -34,9 +32,9 @@ namespace Pay.Identity.Authentication
                 // claims.Add(new Claim(ClaimTypes.Email, userDetails.Email));
                 // claims.Add(new Claim(ClaimTypes.Name, userDetails.FullName));
                 // claims.Add(new Claim(ClaimTypes.Role, "Member"));
-                return true;
+                return (true, userDetails);
             }
-            return false;
+            return (false, userDetails);
         }
     }
 }

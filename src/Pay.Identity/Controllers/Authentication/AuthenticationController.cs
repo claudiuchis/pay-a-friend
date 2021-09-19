@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Collections.Generic;
-using static Pay.Identity.Projections.ReadModels;
+using static Pay.Identity.Queries.ReadModels;
 using Microsoft.AspNetCore.Authentication;
 
 namespace Pay.Identity.Authentication
@@ -34,9 +34,11 @@ namespace Pay.Identity.Authentication
         {
             if (ModelState.IsValid)
             {
-                if (_service.CheckCredentials(model.Email, model.Password, out UserDetails userDetails))
+                (bool result, UserDetails userDetails) = await _service.CheckCredentials(model.Email, model.Password);
+
+                if (result)
                 {
-                    var isuser = new IdentityServerUser(userDetails.Id)
+                    var isuser = new IdentityServerUser(userDetails.UserId)
                     {
                         DisplayName = userDetails.FullName,
                         AdditionalClaims = new Claim[] {
