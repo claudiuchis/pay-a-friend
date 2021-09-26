@@ -47,17 +47,8 @@ namespace Pay.Identity.Registration
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(ConfirmEmail command)
         {
-            try 
-            {
-                var (state, _) = await _service.Handle(command, default);
-                if (state.EmailConfirmed)
-                    return View("EmailConfirmationSuccessful");
-            }
-            catch(EmailConfirmationTokenInvalidException)
-            {
-                return View("EmailConfirmationFailed");
-            }
-            return View("EmailConfirmationFailed");
+            var (state, _) = await _service.Handle(command, default);
+            return (state.EmailConfirmed) ? View("EmailConfirmationSuccessful") : View("EmailConfirmationFailed");    
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Pay.Identity.Domain.Emails
 
         public bool IsTokenValid(string token)
         {
-            if (token!= null && Token.Equals(token) && ValidTo <= DateTime.Now)
+            if (token!= null && Token.Equals(token) && DateTime.Now <= ValidTo )
                 return true;
 
             return false;

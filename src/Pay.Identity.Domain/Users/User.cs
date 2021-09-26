@@ -45,7 +45,6 @@ namespace Pay.Identity.Domain.Users
             {
                 Apply(new V1.EmailConfirmed());
             }
-            throw new EmailConfirmationTokenInvalidException("The token included in the email confirmation link is invalid");
         }
     }
     public record UserState : AggregateState<UserState, UserId> {

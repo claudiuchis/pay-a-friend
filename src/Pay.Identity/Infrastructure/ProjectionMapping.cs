@@ -10,7 +10,7 @@ namespace Pay.Identity.Infrastructure
         {
             EsProjectionMap.AddProjection(new Projection(
                 Name: UserAuthenticationProjection, 
-                Version: 1,
+                Version: 0,
                 Query: @"
                     fromCategory('User')
                         .partitionBy(function(event) {
@@ -23,8 +23,7 @@ namespace Pay.Identity.Infrastructure
                                 state.FullName = event.data.fullName;
                                 state.HashedPassword = event.data.encryptedPassword
                             }
-                        })
-                        .outputState();
+                        });
                 ")
             );
 

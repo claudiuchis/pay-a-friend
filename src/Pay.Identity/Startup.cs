@@ -139,22 +139,18 @@ namespace Pay.Identity
             this IServiceCollection services)
         {
             services
-                .AddSingleton<IHostedService, StreamSubscription>( provider => {
+                .AddSingleton<IHostedService, StreamPersistentSubscription>( provider => {
                     var subscriptionId = "user.registrations";
                     var loggerFactory = provider.GetLoggerFactory();
 
-                    return new StreamSubscription(
+                    return new StreamPersistentSubscription(
                         provider.GetEventStoreClient(),
-                        new StreamSubscriptionOptions() {
-                            StreamName = StreamNames.UserRegistrationsStream,
+                        new StreamPersistentSubscriptionOptions() {
+                            Stream = StreamNames.UserRegistrationsStream,
                             SubscriptionId = subscriptionId,
                             ThrowOnError = true,
                             ResolveLinkTos = true
                         },
-                        new EsCheckpointStore(
-                            provider.GetEventStoreClient(),
-                            loggerFactory.CreateLogger<EsCheckpointStore>()
-                        ),
                         new IEventHandler[] { 
                             new UserReactions(
                                 subscriptionId, 
