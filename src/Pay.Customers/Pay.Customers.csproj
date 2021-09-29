@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pay.Customers.Domain\Pay.Customers.Domain.csproj" />
+    <ProjectReference Include="..\Pay.Common\Pay.Common.csproj" />
   </ItemGroup>
 
 </Project>
